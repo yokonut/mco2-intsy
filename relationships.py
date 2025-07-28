@@ -50,3 +50,17 @@ def daughter(A,B):
     assertions.append(f"parent_of({B},{A})")
     assertions.append(f"female({A})")
     return assertions
+
+def child(A,B):
+    normalize(A,B)
+    assertions = []
+    assertions.append(f"parent_of({B},{A})")
+    return assertions
+
+def children(A,B,C,D):
+    normalize(A,B,C,D)
+    assertions = []
+    assertions.append(f"parent_of({D},{A})")
+    assertions.append(f"parent_of({D},{B})")
+    assertions.append(f"parent_of({D},{C})")
+    return assertions
