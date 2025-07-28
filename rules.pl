@@ -1,22 +1,45 @@
+%Declaring predicates as dynamic
+:- dynamic parent_of/2.
+:- dynamic child_of/2.
+:- dynamic father_of/2.
+:- dynamic mother_of/2.
+:- dynamic son_of/2.
+:- dynamic daughter_of/2.
+:- dynamic grandparent_of/2.
+:- dynamic grandfather_of/2.
+:- dynamic grandmother_of/2.
+:- dynamic grandson_of/2.
+:- dynamic granddaughter_of/2.
+:- dynamic siblings/2.
+:- dynamic brother_of/2.
+:- dynamic sister_of/2.
+:- dynamic uncle_of/2.
+:- dynamic aunt_of/2.
+:- dynamic nephew_of/2.
+:- dynamic niece_of/2.
+:- dynamic male/1.
+:- dynamic female/1.
+
+
 %Male or Female
-male(X) :- brother_of(X,_).
-male(X) :- father_of(X,_).
-male(X) :- grandfather_of(X,_).
-male(X) :- son_of(X,_).
-male(X) :- grandson_of(X,_).
-male(X) :- uncle_of(X,_).
-male(X) :- nephew_of(X,_).
-female(X) :- sister_of(X,_).
-female(X) :- mother_of(X,_).
-female(X) :- grandmother_of(X,_).
-female(X) :- granddaughter_of(X,_).
-female(X) :- daughter_of(X,_).
-female(X) :- aunt_of(X,_).
-female(X) :- niece_of(X,_).
+% male(X) :- brother_of(X,_).
+% male(X) :- father_of(X,_).
+% male(X) :- grandfather_of(X,_).
+% male(X) :- son_of(X,_).
+% male(X) :- grandson_of(X,_).
+% male(X) :- uncle_of(X,_).
+% male(X) :- nephew_of(X,_).
+% female(X) :- sister_of(X,_).
+% female(X) :- mother_of(X,_).
+% female(X) :- grandmother_of(X,_).
+% female(X) :- granddaughter_of(X,_).
+% female(X) :- daughter_of(X,_).
+% female(X) :- aunt_of(X,_).
+% female(X) :- niece_of(X,_).
 
 %Relationship Rules
-parent_of(X,Y) :- child_of(Y,X),
-    X\=Y.
+child_of(X,Y) :- parent_of(Y,X),
+    X \= Y.
 
 son_of(X,Y) :- male(X),
     parent_of(Y,X).
@@ -69,5 +92,4 @@ nephew_of(X,Y) :- male(X),
 niece_of(X,Y) :- female(X),
     (uncle_of(Y,X) ; aunt_of(Y,X)).
 
-    
-%From main program
+
