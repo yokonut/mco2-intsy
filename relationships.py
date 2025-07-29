@@ -20,47 +20,61 @@ def assertz(assertions):
             prolog.retract(fact)
         print("❌ That's impossible! One or more statements contradict known facts.")
 
-def normalize(A,B):
-    return A.lower(), B.lower()
+def normalize(*args):
+    return [a.lower() for a in args]
+
 
 def mother(A,B):
-    normalize(A,B)
+    A, B = normalize(A,B)
     assertions = []
     assertions.append(f"parent_of({A},{B})")
     assertions.append(f"female({A})")
     return assertions
 
 def father(A,B):
-    normalize(A,B)
+    A, B = normalize(A,B)
     assertions = []
     assertions.append(f"parent_of({A},{B})")
     assertions.append(f"male({A})")
     return assertions
 
 def son(A,B):
-    normalize(A,B)
+    A, B = normalize(A,B)
     assertions = []
     assertions.append(f"parent_of({B},{A})")
     assertions.append(f"male({A})")
     return assertions
 
 def daughter(A,B):
-    normalize(A,B)
+    A, B = normalize(A,B)
     assertions = []
     assertions.append(f"parent_of({B},{A})")
     assertions.append(f"female({A})")
     return assertions
 
 def child(A,B):
-    normalize(A,B)
+    A, B = normalize(A,B)
     assertions = []
     assertions.append(f"parent_of({B},{A})")
     return assertions
 
 def children(A,B,C,D):
-    normalize(A,B,C,D)
+    A,B,C,D = normalize(A,B,C,D)
     assertions = []
     assertions.append(f"parent_of({D},{A})")
     assertions.append(f"parent_of({D},{B})")
     assertions.append(f"parent_of({D},{C})")
     return assertions
+
+def sibling(A, B):
+    A, B = normalize(A, B)
+
+    query = f"parent_of(X, {A}), parent_of(X, {B}), {A} \\= {B}"
+    results = list(prolog.query(query))
+
+    if results:
+        print("✅ I already knew they were siblings!")
+        return []
+    else:
+        print("❌ I can’t confirm that unless I know who their shared parent is.")
+        return []

@@ -55,7 +55,7 @@ siblings(X,Y) :- parent_of(Z,X),
     parent_of(Z,Y),
     X \= Y.
 
-sister_of(X,Y) :- female(X),
+sister_of(X,Y) :- female(X),    
     siblings(X,Y).
 
 brother_of(X,Y) :- male(X),
