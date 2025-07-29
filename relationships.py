@@ -38,6 +38,10 @@ def mother(A,B):
         print("❌ Contradiction: Can't be mother and child.")
         return []
     
+    if list(prolog.query(f"male({A})")):
+        print("❌ Contradiction: A male cannot be a mother.")
+        return []
+    
     assertions = []
     assertions.append(f"parent_of({A},{B})")
     assertions.append(f"female({A})")
@@ -48,6 +52,10 @@ def father(A,B):
     
     if list(prolog.query(f"parent_of({B}, {A})")):
         print("❌ Contradiction: Can't be father and child.")
+        return []
+    
+    if list(prolog.query(f"female({A})")):
+        print("❌ Contradiction: A female cannot be a father.")
         return []
     
     assertions = []
@@ -62,6 +70,10 @@ def son(A,B):
         print("❌ Contradiction: Can't be son and parent.")
         return []
     
+    if list(prolog.query(f"female({A})")):
+        print("❌ Contradiction: A female cannot be a son.")
+        return []
+    
     assertions = []
     assertions.append(f"parent_of({B},{A})")
     assertions.append(f"male({A})")
@@ -72,6 +84,10 @@ def daughter(A,B):
     
     if list(prolog.query(f"parent_of({A}, {B})")):
         print("❌ Contradiction: Can't be daughter and parent.")
+        return []
+    
+    if list(prolog.query(f"male({A})")):
+        print("❌ Contradiction: A male cannot be a daughter.")
         return []
     
     assertions = []
@@ -90,13 +106,30 @@ def child(A,B):
     assertions.append(f"parent_of({B},{A})")
     return assertions
 
-def children(A,B,C,D):
-    A,B,C,D = normalize(A,B,C,D)
-    assertions = []
-    assertions.append(f"parent_of({D},{A})")
-    assertions.append(f"parent_of({D},{B})")
-    assertions.append(f"parent_of({D},{C})")
+def children(A, B, C, D):
+    A, B, C, D = normalize(A, B, C, D)
+
+    if len({A, B, C}) < 3:
+        print("❌ Contradiction: All three children must be distinct.")
+        return []
+
+    if D in {A, B, C}:
+        print("❌ Contradiction: A person cannot be their own child.")
+        return []
+
+    # Check for child-parent reversals
+    for child in [A, B, C]:
+        if list(prolog.query(f"parent_of({child}, {D})")):
+            print(f"❌ Contradiction: {child} cannot be a parent of {D}.")
+            return []
+
+    assertions = [
+        f"parent_of({D}, {A})",
+        f"parent_of({D}, {B})",
+        f"parent_of({D}, {C})"
+    ]
     return assertions
+
 
 def sibling(A, B):
     A, B = normalize(A, B)
@@ -105,8 +138,7 @@ def sibling(A, B):
     results = list(prolog.query(query))
 
     if results:
-        print("✅ I already knew they were siblings!")
-        return [f"{A} and {B} are siblings"]
+        return "✅ I already knew they were siblings!"
     else:
         print("❌ I can’t confirm that unless I know who their shared parent is.")
         return []
@@ -120,8 +152,7 @@ def sister(A, B):
     if results:
         is_female = list(prolog.query(f"female({A})"))
         if is_female:
-            print("✅ I already knew she was a sister.")
-            return [f"{A} is the sister of {B}"]
+            return "✅ I already knew she was a sister."
         else:
             return [f"female({A})"]
     else:
@@ -138,8 +169,7 @@ def brother(A, B):
     if results:
         is_male = list(prolog.query(f"male({A})"))
         if is_male:
-            print("✅ I already knew he was a brother.")
-            return [f"{A} is the brother of {B}"]
+            return "✅ I already knew he was a brother."
         else:
             return [f"male({A})"]
     else:
@@ -156,8 +186,7 @@ def grandmother(A, B):
     if results:
         is_female = list(prolog.query(f"female({A})"))
         if is_female:
-            print("✅ I already knew she was a grandmother.")
-            return [f"{A} is the grandmother of {B}"]
+            return "✅ I already knew she was a grandmother."
         else:
             return [f"female({A})"]
     else:
@@ -172,8 +201,7 @@ def grandfather(A, B):
     results = list(prolog.query(query))
 
     if results:
-        print("✅ I already knew he was a grandfather.")
-        return []
+        return "✅ I already knew he was a grandfather."
 
     # Check if the parent-child chain is known (A → Z → B), but male(A) is not known
     partial_query = f"parent_of({A}, Z), parent_of(Z, {B})"
@@ -189,14 +217,18 @@ def grandfather(A, B):
 
 def uncle(A, B):
     A, B = normalize(A, B)
+    
+    if list(prolog.query(f"female({A})")):
+        print("❌ Contradiction: A female cannot be an uncle.")
+        return []
 
     # Full condition: A is male and A is a sibling of B's parent
     query = f"parent_of(Z, {B}), parent_of(X, Z), parent_of(X, {A}), male({A}), {A} \\= Z"
     results = list(prolog.query(query))
-
+    
+    
     if results:
-        print("✅ I already knew he was an uncle.")
-        return []
+        return "✅ I already knew he was an uncle."
     
     # Partial check: shared parent with B's parent (sibling of parent)
     query_partial = f"parent_of(Z, {B}), parent_of(X, Z), parent_of(X, {A}), {A} \\= Z"
@@ -211,13 +243,16 @@ def uncle(A, B):
     
 def aunt(A, B):
     A, B = normalize(A, B)
+    
+    if list(prolog.query(f"male({A})")):
+        print("❌ Contradiction: A male cannot be an aunt.")
+        return []
 
     query = f"parent_of(Z, {B}), parent_of(X, Z), parent_of(X, {A}), female({A}), {A} \\= Z"
     results = list(prolog.query(query))
 
     if results:
-        print("✅ I already knew she was an aunt.")
-        return []
+        return "✅ I already knew she was an aunt."
     else:
         query_partial = f"parent_of(Z, {B}), parent_of(X, Z), parent_of(X, {A}), {A} \\= Z"
         partial_results = list(prolog.query(query_partial))
@@ -230,12 +265,22 @@ def aunt(A, B):
 
 def parent(A, B, C):
     A, B, C = normalize(A, B, C)
-    
+
     if A == B:
-        print("❌ Parents must be different individuals.")
+        print("❌ Contradiction: Parents must be two different individuals.")
         return []
-    
-    assertions = []
-    assertions.append(f"parent_of({A}, {C})")
-    assertions.append(f"parent_of({B}, {C})")
+
+    if C == A or C == B:
+        print("❌ Contradiction: A person cannot be their own child.")
+        return []
+
+    if list(prolog.query(f"parent_of({C}, {A})")) or list(prolog.query(f"parent_of({C}, {B})")):
+        print("❌ Contradiction: A child cannot be a parent of their own parent.")
+        return []
+
+    assertions = [
+        f"parent_of({A}, {C})",
+        f"parent_of({B}, {C})"
+    ]
     return assertions
+

@@ -3,7 +3,7 @@ from relationships import (
     prolog, assertz,
     mother, father, son, daughter, child, children,
     sibling, aunt, uncle, sister, brother,
-    grandmother, grandfather
+    grandmother, grandfather, parent
 )
 
 import re
