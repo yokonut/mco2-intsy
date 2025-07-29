@@ -106,7 +106,7 @@ def sibling(A, B):
 
     if results:
         print("✅ I already knew they were siblings!")
-        return []
+        return [f"{A} and {B} are siblings"]
     else:
         print("❌ I can’t confirm that unless I know who their shared parent is.")
         return []
@@ -121,7 +121,7 @@ def sister(A, B):
         is_female = list(prolog.query(f"female({A})"))
         if is_female:
             print("✅ I already knew she was a sister.")
-            return []
+            return [f"{A} is the sister of {B}"]
         else:
             return [f"female({A})"]
     else:
@@ -139,7 +139,7 @@ def brother(A, B):
         is_male = list(prolog.query(f"male({A})"))
         if is_male:
             print("✅ I already knew he was a brother.")
-            return []
+            return [f"{A} is the brother of {B}"]
         else:
             return [f"male({A})"]
     else:
@@ -157,7 +157,7 @@ def grandmother(A, B):
         is_female = list(prolog.query(f"female({A})"))
         if is_female:
             print("✅ I already knew she was a grandmother.")
-            return []
+            return [f"{A} is the grandmother of {B}"]
         else:
             return [f"female({A})"]
     else:
