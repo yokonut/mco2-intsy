@@ -157,6 +157,12 @@ query_sister(X, Y) :- sister_of(X, Y).
 query_grandparent(X, Y) :- grandparent_of(X, Y).
 query_grandmother(X, Y) :- grandmother_of(X, Y).
 query_grandfather(X, Y) :- grandfather_of(X, Y).
+query_child(X, Y) :- child_of(X, Y).
+query_children_of(A, B, C, D) :-
+    child_of(A, D),
+    child_of(B, D),
+    child_of(C, D).
+
 
 % Ancestor relationship (recursive)
 ancestor(X, Y) :- parent_of(X, Y).
