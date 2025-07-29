@@ -103,6 +103,11 @@ def match_statement(text):
             A, B, C = [n.strip() for n in names]
             assertz(children(A, B, C, parent.strip()))
             return "✅ Got it!"
+        
+    if " is the mother of " in text:
+        A, B = text.split(" is the mother of ")
+        assertz(mother(A.strip(), B.strip()))
+        return "✅ Got it!"
 
     return None
 
@@ -111,35 +116,36 @@ import re
 
 def ask_question(text):
     for pattern, query_func in question_patterns.items():
+        # Convert human-friendly patterns to regex
         regex = pattern
         regex = regex.replace("{A}", r"(?P<A>\w+)")
         regex = regex.replace("{B}", r"(?P<B>\w+)")
         regex = regex.replace("{C}", r"(?P<C>\w+)")
         regex = regex.replace("{D}", r"(?P<D>\w+)")
 
-        match = re.fullmatch(regex, text, re.IGNORECASE)
+        match = re.fullmatch(regex, text.strip(), re.IGNORECASE)
         if match:
-            groups = match.groupdict()
+            groups = {k: v.lower() for k, v in match.groupdict().items()}
             query = query_func(**groups)
 
             results = []
-            for sub_query in [q.strip() for q in query.split(",")]:
-                if "X" in sub_query:  # WH-question
-                    result = list(prolog.query(sub_query))
-                    if result:
-                        results.extend([res['X'].capitalize() for res in result])
-                else:  # Yes/No question
-                    result = list(prolog.query(sub_query))
-                    if not result:
+
+            for sub_query in [q.strip() for q in query.split("&&")]:  # use && for chaining multiple checks
+                if re.search(r'\bX\b', sub_query):  # retrieve query
+                    for solution in prolog.query(sub_query):
+                        results.append(solution['X'].capitalize())
+                else:  # yes/no query
+                    if not list(prolog.query(sub_query)):
                         return "❌ No."
+
             return f"📋 Answer: {', '.join(results)}" if results else "✅ Yes."
 
     return "❓ I don't understand the question."
 
 
+
 #TO DO: Figure out how to parse sentences and determine which sentences are valid
 # Deal with some flaws of implications and with contingencies and contradictions
-assertz(mother("Michelle", "Yohan"))
 
 
 def process_input(text):

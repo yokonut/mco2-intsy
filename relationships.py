@@ -5,6 +5,7 @@ def assertz(assertions):
     temp_assertions = [] 
     try:
         for fact in assertions:
+            print(f"➡️ Asserting: {fact}")  # DEBUG LINE
             existing = list(prolog.query(fact))
             if existing:
                 print(f"📌 I already knew: {fact}")
@@ -18,7 +19,8 @@ def assertz(assertions):
     except Exception as e:
         for fact in temp_assertions:
             prolog.retract(fact)
-        print("❌ That's impossible! One or more statements contradict known facts.")
+        print(f"❌ That's impossible! One or more statements contradict known facts.\n{e}")
+
 
 def normalize(A,B):
     return A.lower(), B.lower()
