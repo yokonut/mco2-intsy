@@ -118,6 +118,10 @@ def match_statement(text):
                     return assertz(grandmother(groups['A'], groups['B'])) 
                 elif "grandfather(" in logic:
                     return assertz(grandfather(groups['A'], groups['B'])) 
+                elif "children(" in logic:
+                    return assertz(children(groups['A'],groups['B'],groups['C'],groups['D']))
+                elif "parent(" in logic:
+                    return assertz(parent(groups['A'], groups['B'], groups['C']))
             except Exception as e:
                 return f"❌ Error while asserting: {e}"
 

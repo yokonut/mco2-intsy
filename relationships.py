@@ -2,6 +2,7 @@ from pyswip import Prolog
 prolog = Prolog()
 
 def assertz(assertions):
+    
     temp_assertions = [] 
     try:
         for fact in assertions:
@@ -26,6 +27,11 @@ def normalize(*args):
 
 def mother(A,B):
     A, B = normalize(A,B)
+    
+    if list(prolog.query(f"parent_of({B}, {A})")):
+        print("❌ Contradiction: Can't be mother and child.")
+        return []
+    
     assertions = []
     assertions.append(f"parent_of({A},{B})")
     assertions.append(f"female({A})")
@@ -33,6 +39,11 @@ def mother(A,B):
 
 def father(A,B):
     A, B = normalize(A,B)
+    
+    if list(prolog.query(f"parent_of({B}, {A})")):
+        print("❌ Contradiction: Can't be father and child.")
+        return []
+    
     assertions = []
     assertions.append(f"parent_of({A},{B})")
     assertions.append(f"male({A})")
@@ -40,6 +51,11 @@ def father(A,B):
 
 def son(A,B):
     A, B = normalize(A,B)
+    
+    if list(prolog.query(f"parent_of({A}, {B})")):
+        print("❌ Contradiction: Can't be son and parent.")
+        return []
+    
     assertions = []
     assertions.append(f"parent_of({B},{A})")
     assertions.append(f"male({A})")
@@ -47,6 +63,11 @@ def son(A,B):
 
 def daughter(A,B):
     A, B = normalize(A,B)
+    
+    if list(prolog.query(f"parent_of({A}, {B})")):
+        print("❌ Contradiction: Can't be daughter and parent.")
+        return []
+    
     assertions = []
     assertions.append(f"parent_of({B},{A})")
     assertions.append(f"female({A})")
@@ -54,6 +75,11 @@ def daughter(A,B):
 
 def child(A,B):
     A, B = normalize(A,B)
+    
+    if list(prolog.query(f"parent_of({A},{B})")):
+        print("❌ Contradiction: Can't be child and parent.")
+        return []
+    
     assertions = []
     assertions.append(f"parent_of({B},{A})")
     return assertions
@@ -74,7 +100,7 @@ def sibling(A, B):
 
     if results:
         print("✅ I already knew they were siblings!")
-        return [f"female({A})"]
+        return []
     else:
         print("❌ I can’t confirm that unless I know who their shared parent is.")
         return []
@@ -196,3 +222,14 @@ def aunt(A, B):
             return []
 
 
+def parent(A, B, C):
+    A, B, C = normalize(A, B, C)
+    
+    if A == B:
+        print("❌ Parents must be different individuals.")
+        return []
+    
+    assertions = []
+    assertions.append(f"parent_of({A}, {C})")
+    assertions.append(f"parent_of({B}, {C})")
+    return assertions
