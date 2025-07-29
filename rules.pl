@@ -20,23 +20,6 @@
 :- dynamic male/1.
 :- dynamic female/1.
 
-
-%Male or Female
-% male(X) :- brother_of(X,_).
-% male(X) :- father_of(X,_).
-% male(X) :- grandfather_of(X,_).
-% male(X) :- son_of(X,_).
-% male(X) :- grandson_of(X,_).
-% male(X) :- uncle_of(X,_).
-% male(X) :- nephew_of(X,_).
-% female(X) :- sister_of(X,_).
-% female(X) :- mother_of(X,_).
-% female(X) :- grandmother_of(X,_).
-% female(X) :- granddaughter_of(X,_).
-% female(X) :- daughter_of(X,_).
-% female(X) :- aunt_of(X,_).
-% female(X) :- niece_of(X,_).
-
 %Relationship Rules
 child_of(X,Y) :- parent_of(Y,X),
     X \= Y.
@@ -92,4 +75,13 @@ nephew_of(X,Y) :- male(X),
 niece_of(X,Y) :- female(X),
     (uncle_of(Y,X) ; aunt_of(Y,X)).
 
+relatives(X,Y) :- siblings(X,Y).
+
+relatives(X,Y) :- parent_of(X,Y).
+
+relatives(X,Y) :- parent_of(Y,X).
+
+relatives(X,Y) :- grandparent_of(X,Y).
+
+relatives(X,Y) :- grandparent_of(Y,X).
 
