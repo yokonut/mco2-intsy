@@ -2,10 +2,12 @@ from pyswip import Prolog
 prolog = Prolog()
 
 def assertz(assertions):
-    
     temp_assertions = [] 
     try:
         for fact in assertions:
+            if not fact.strip():  # Skip empty facts
+                continue
+
             existing = list(prolog.query(fact))
             if existing:
                 print(f"📌 I already knew: {fact}")
@@ -14,12 +16,16 @@ def assertz(assertions):
             prolog.assertz(fact)
             temp_assertions.append(fact)
 
-        return "✅ I've learned something new."
+        if temp_assertions:
+            return "✅ I've learned something new."
+        else:
+            return "🤔 No new information was added."
 
     except Exception as e:
         for fact in temp_assertions:
             prolog.retract(fact)
         return "❌ That's impossible! One or more statements contradict known facts."
+
 
 def normalize(*args):
     return [a.lower() for a in args]
