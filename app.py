@@ -4,6 +4,11 @@ from interface import family
 
 app = Flask(__name__)
 
+@app.route("/chat")
+def chat():
+    return render_template("chat.html")
+
+
 @app.route("/", methods=["GET", "POST"])
 def home():
     result = ""

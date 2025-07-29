@@ -14,8 +14,8 @@
 
 <body style="background-color: #F191AF;" class ="min-h-screen flex flex-col items-center mt-[250px] text-white">
     <div class="flex items-center justify-center">
-<button type="button" class="hover:scale-105 transition-transform duration-300" onclick="window.location.href='chat.html'">
-    <img src="../img/start-bunny.png" style="height: 350px;">
+<button type="button" class="hover:scale-105 transition-transform duration-300" onclick="window.location.href='{{ url_for('chat') }}'">
+    <img src="{{ url_for('static', filename='img/start-bunny.png') }}" style="height: 350px;">
 </button>
     </div>
 </body>

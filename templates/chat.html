@@ -13,27 +13,30 @@
   ChatBunny
 </h1>
 
+<div id="contents" class="flex flex-col items-center justify-center ">
 <!-- User message -->
 <div id="user-query"
      style="display: flex; justify-content: center; align-items: center; flex-direction: column;
-            background-color: #FABABB; border: 2px solid black; border-radius: 90px;
-            width: 1200px; height: 80px; margin: 0 auto 20px auto;">
-  heyooo
+            background-color: #FABABB; border-radius: 90px;
+            width: 1200px; height: 80px; margin: 0 0 80px 80px;">
+<!--user entry goes here-->
 </div>
 
 <!-- Bot message -->
 <div id="bot-ans"
      style="display: flex; justify-content: center; align-items: center; flex-direction: column;
-            background-color: #FABABB; border: 2px solid aqua; border-radius: 90px;
-            width: 1200px; height: 80px; margin: 0 auto 20px auto;">
-  heyooo
+            background-color: #FABABB; border-radius: 90px;
+            width: 1200px; height: 80px; margin: 0 0 20px -80px;">
+<!--bot entry goes here-->
 </div>
 
+
+</div>
 <!-- Question input form -->
 <div id="answer-form"
      style="position: absolute; bottom: 20px; left: 50%; transform: translateX(-50%);
             border-radius: 90px; overflow: hidden; display: flex; justify-content: center; align-items: center;
-            box-shadow: 0 6px 20px rgba(0, 0, 0, 0.15); border: 2px solid red;">
+            box-shadow: 0 6px 20px rgba(0, 0, 0, 0.15); ">
             
   <form onsubmit="handleSubmit(event)"
         style="background-color: #fff; padding: 20px; border-radius: 40px;
@@ -42,7 +45,7 @@
     <input type="text" id="user-question" name="query" placeholder="Ask/tell me anything!"
            style="padding: 20px; font-size: 24px; width: 1200px; outline: none;">
                   
-    <input type="image" src="../img/submit-bunny.png" alt="Send with Bunny Magic"
+    <input type="image" src="{{ url_for('static', filename='img/submit-bunny.png') }}" alt="Send with Bunny Magic"
            style="width: 80px; height: 80px; border: none; cursor: pointer;">
   </form>
 </div>
