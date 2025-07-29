@@ -78,3 +78,88 @@ def sibling(A, B):
     else:
         print("❌ I can’t confirm that unless I know who their shared parent is.")
         return []
+
+def sister(A, B):
+    A, B = normalize(A, B)
+    
+    query = f"parent_of(X, {A}), parent_of(X, {B}), {A} \\= {B}"
+    results = list(prolog.query(query))
+
+    if results:
+        assertions = [f"female({A})"]
+        return assertions
+    else:
+        print("❌ I can’t confirm she’s a sister unless I know a shared parent.")
+        return []
+
+def brother(A, B):
+    A, B = normalize(A, B)
+
+    query = f"parent_of(X, {A}), parent_of(X, {B}), {A} \\= {B}"
+    results = list(prolog.query(query))
+
+    if results:
+        assertions = [f"male({A})"]
+        return assertions
+    else:
+        print("❌ I can’t confirm he’s a brother unless I know a shared parent.")
+        return []
+    
+def grandfather(A, B):
+    A, B = normalize(A, B)
+    assertions = []
+
+    query = f"parent_of({A}, Z), parent_of(Z, {B})"
+    results = list(prolog.query(query))
+
+    if results:
+        assertions.append(f"male({A})")
+        return assertions
+    else:
+        print("❌ I can’t confirm he’s a grandfather unless I know the parent and grandparent links.")
+        return []
+
+def grandmother(A, B):
+    A, B = normalize(A, B)
+    assertions = []
+
+    query = f"parent_of({A}, Z), parent_of(Z, {B})"
+    results = list(prolog.query(query))
+
+    if results:
+        assertions.append(f"female({A})")
+        return assertions
+    else:
+        print("❌ I can’t confirm she’s a grandmother unless I know the parent and grandparent links.")
+        return []
+    
+
+def uncle(A, B):
+    A, B = normalize(A, B)
+    assertions = []
+
+    query = f"parent_of(Z, {B}), brother_of({A}, Z)"
+    results = list(prolog.query(query))
+
+    if results:
+        assertions.append(f"male({A})")
+        return assertions
+    else:
+        print("❌ I can’t confirm he’s an uncle unless I know who the shared parent and sibling are.")
+        return []
+
+def aunt(A, B):
+    A, B = normalize(A, B)
+    assertions = []
+
+    query = f"parent_of(Z, {B}), sister_of({A}, Z)"
+    results = list(prolog.query(query))
+
+    if results:
+        assertions.append(f"female({A})")
+        return assertions
+    else:
+        print("❌ I can’t confirm she’s an aunt unless I know who the shared parent and sibling are.")
+        return []
+  
+
