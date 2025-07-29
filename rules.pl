@@ -20,6 +20,33 @@
 :- dynamic male/1.
 :- dynamic female/1.
 
+
+invalid(female(X)) :- male(X).
+invalid(male(X)) :- female(X).
+
+
+invalid(parent_of(X, X)).
+invalid(child_of(X, X)).
+invalid(mother_of(X, X)).
+invalid(father_of(X, X)).
+invalid(siblings(X, X)).
+invalid(sister_of(X, X)).
+invalid(brother_of(X, X)).
+invalid(grandparent_of(X, X)).
+invalid(grandfather_of(X, X)).
+invalid(grandmother_of(X, X)).
+invalid(uncle_of(X, X)).
+invalid(aunt_of(X, X)).
+invalid(son_of(X, X)).
+invalid(daughter_of(X, X)).
+
+invalid(parent_of(X, Y)) :- ancestor(Y, X).
+
+valid_assertion(Fact) :- \+ invalid(Fact).
+
+safe_assertz(Fact) :- valid_assertion(Fact), \+ Fact, assertz(Fact).
+
+
 %Relationship Rules
 child_of(X,Y) :- parent_of(Y,X),
     X \= Y.

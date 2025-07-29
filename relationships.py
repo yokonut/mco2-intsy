@@ -33,33 +33,44 @@ def assertz(assertions):
             if not fact.strip():
                 continue
 
-            
+            # 🛑 Skip malformed sentences
             if " is " in fact or " of " in fact:
                 continue
 
+            # 🧠 Only allow core predicates
             pred_name = fact.split('(')[0]
             if pred_name not in {"parent_of", "male", "female", "mother_of", "father_of"}:
                 continue
 
+            # ✅ Already known?
             existing = list(prolog.query(fact))
             if existing:
                 print(f"✅ I already knew {fact}.")
                 continue
 
-            
-            if fact.startswith("mother_of(") or fact.startswith("father_of(") or fact.startswith("parent_of("):
+            # 🧠 NEW: Ask Prolog if this fact is invalid
+            invalid_check = list(prolog.query(f"invalid({fact.strip()})"))
+            if invalid_check:
+                return f"❌ That contradicts logic: {fact} is invalid."
+
+            # 🧠 Extra safety for parent_of-style facts
+            if fact.startswith(("mother_of(", "father_of(", "parent_of(")):
                 inner = fact[fact.index('(')+1:fact.index(')')]
                 parent, child = [x.strip() for x in inner.split(',')]
 
+                if parent == child:
+                    return f"❌ That contradicts logic: someone cannot be their own parent."
+
                 if are_siblings(parent, child):
                     return f"❌ That contradicts known facts: {parent} and {child} are siblings, so one can't be the parent of the other."
-                
+
                 if is_descendant_of(parent, child):
                     return f"❌ That contradicts known facts: {parent} is a descendant of {child}, so can't be their parent."
 
                 if creates_cycle(child, parent):
                     return f"❌ That creates an impossible cycle: {parent} cannot be both ancestor and descendant of {child}."
 
+            # ✅ Passes all checks → assert
             prolog.assertz(fact)
             temp_assertions.append(fact)
 
@@ -69,9 +80,10 @@ def assertz(assertions):
             return "🤔 No new information was added."
 
     except Exception as e:
+        # Roll back any partially added facts
         for fact in temp_assertions:
             prolog.retract(fact)
-        return "❌ That's impossible! One or more statements contradict known facts."
+        return f"❌ That's impossible! One or more statements contradict known facts.\n⚠️ {e}"
 
 
 

@@ -15,14 +15,12 @@ from relationships import (
     brother,
     grandmother,
     grandfather,
-    parent,parent
+    parent
 )
 
 import re
+prolog.consult("rules.pl", relative_to=__file__)
 
-
-family = Prolog()
-family.consult("rules.pl", relative_to=__file__)
 
 relationships = {
     "son",
