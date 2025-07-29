@@ -1,19 +1,75 @@
 <!DOCTYPE html>
 <html>
 <head>
-<script src="https://cdn.tailwindcss.com"></script>
-<title>CHATBUNNY</title>
+  <script src="https://cdn.tailwindcss.com"></script>
+  <link href="https://fonts.googleapis.com/css2?family=Comfortaa&display=swap" rel="stylesheet">
+  <title>Ask me questions!</title>
 </head>
 
-<body>
-    <h1>🔍 Query Family Relationships</h1>
-    <form method="POST">
-        <input type="text" name="query" placeholder="e.g. son_of(jerry, X)">
-        <input type="submit" value="Check">
-    </form>
-    {% if result %}
-        <h3>Result:</h3>
-        <pre>{{ result }}</pre>
-    {% endif %}
+<body style="margin:0; background-color:#FFF5EE; font-family:'Comfortaa', cursive; overflow:hidden; height:100vh; color:#572542;">
+
+<!-- Title -->
+<h1 style="font-size: 2.5rem; font-weight: bold; text-align: center; margin-top: 20px; margin-bottom: 40px;">
+  ChatBunny
+</h1>
+
+<!-- User message -->
+<div id="user-query"
+     style="display: flex; justify-content: center; align-items: center; flex-direction: column;
+            background-color: #FABABB; border: 2px solid black; border-radius: 90px;
+            width: 1200px; height: 80px; margin: 0 auto 20px auto;">
+  heyooo
+</div>
+
+<!-- Bot message -->
+<div id="bot-ans"
+     style="display: flex; justify-content: center; align-items: center; flex-direction: column;
+            background-color: #FABABB; border: 2px solid aqua; border-radius: 90px;
+            width: 1200px; height: 80px; margin: 0 auto 20px auto;">
+  heyooo
+</div>
+
+<!-- Question input form -->
+<div id="answer-form"
+     style="position: absolute; bottom: 20px; left: 50%; transform: translateX(-50%);
+            border-radius: 90px; overflow: hidden; display: flex; justify-content: center; align-items: center;
+            box-shadow: 0 6px 20px rgba(0, 0, 0, 0.15); border: 2px solid red;">
+            
+  <form onsubmit="handleSubmit(event)"
+        style="background-color: #fff; padding: 20px; border-radius: 40px;
+               box-shadow: 0 6px 20px rgba(0, 0, 0, 0.15); display: flex; gap: 20px; align-items: center;">
+               
+    <input type="text" id="user-question" name="query" placeholder="Ask/tell me anything!"
+           style="padding: 20px; font-size: 24px; width: 1200px; outline: none;">
+                  
+    <input type="image" src="../img/submit-bunny.png" alt="Send with Bunny Magic"
+           style="width: 80px; height: 80px; border: none; cursor: pointer;">
+  </form>
+</div>
+
+
+
+
+
+  <!-- Form logic -->
+  <script>
+    function handleSubmit(event) {
+      event.preventDefault();
+
+      const question = document.getElementById("user-question").value;
+      const answerArea = document.getElementById("answer-area");
+
+      if (question.trim() === "") {
+        answerArea.innerHTML = "Don't be shy, hop in a question!";
+      } else if (question.toLowerCase().includes("family")) {
+        answerArea.innerHTML = "Looks like you're curious about your bunny kin! 🐇";
+      } else {
+        answerArea.innerHTML = `You said: "${question}". Let me burrow into that... 🕵️‍♀️`;
+      }
+
+      document.getElementById("user-question").value = "";
+    }
+  </script>
+
 </body>
 </html>
