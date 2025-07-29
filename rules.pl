@@ -85,3 +85,24 @@ relatives(X,Y) :- grandparent_of(X,Y).
 
 relatives(X,Y) :- grandparent_of(Y,X).
 
+% Helper predicates for chatbot queries
+query_who_mother(Child, X) :- mother_of(X, Child).
+query_who_father(Child, X) :- father_of(X, Child).
+query_who_siblings(Person, X) :- siblings(Person, X).
+query_who_grandfather(Person, X) :- grandfather_of(X, Person).
+query_who_grandmother(Person, X) :- grandmother_of(X, Person).
+query_who_grandparent(Person, X) :- grandparent_of(X, Person).
+query_who_uncle(Person, X) :- uncle_of(X, Person).
+query_who_aunt(Person, X) :- aunt_of(X, Person).
+
+
+query_mother(X, Y) :- mother_of(X, Y).
+query_father(X, Y) :- father_of(X, Y).
+query_siblings(X, Y) :- siblings(X, Y).
+query_uncle(X, Y) :- uncle_of(X, Y).
+query_aunt(X, Y) :- aunt_of(X, Y).
+query_brother(X, Y) :- brother_of(X, Y).
+query_sister(X, Y) :- sister_of(X, Y).
+query_grandparent(X, Y) :- grandparent_of(X, Y).
+query_grandmother(X, Y) :- grandmother_of(X, Y).
+query_grandfather(X, Y) :- grandfather_of(X, Y).

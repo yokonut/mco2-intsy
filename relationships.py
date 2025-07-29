@@ -284,3 +284,82 @@ def parent(A, B, C):
     ]
     return assertions
 
+
+
+
+
+## QUERY FUNCTIONS
+
+def query_sibling(A, B):
+    return f"parent_of(X, {A}), parent_of(X, {B}), {A} \\= {B}"
+
+def query_sister(A, B):
+    return f"parent_of(X, {A}), parent_of(X, {B}), female({A}), {A} \\= {B}"
+
+def query_brother(A, B):
+    return f"parent_of(X, {A}), parent_of(X, {B}), male({A}), {A} \\= {B}"
+
+def query_mother(A, B):
+    return f"parent_of({A}, {B}), female({A})"
+
+def query_father(A, B):
+    return f"parent_of({A}, {B}), male({A})"
+
+def query_parents_of(A, B, C):
+    return f"parent_of({A}, {C}), parent_of({B}, {C})"
+
+def query_grandmother(A, B):
+    return f"parent_of({A}, X), parent_of(X, {B}), female({A})"
+
+def query_grandfather(A, B):
+    return f"parent_of({A}, X), parent_of(X, {B}), male({A})"
+
+def query_daughter(A, B):
+    return f"parent_of({B}, {A}), female({A})"
+
+def query_son(A, B):
+    return f"parent_of({B}, {A}), male({A})"
+
+def query_child(A, B):
+    return f"parent_of({B}, {A})"
+
+def query_children_of(A, B, C, D):
+    return f"parent_of({D}, {A}), parent_of({D}, {B}), parent_of({D}, {C})"
+
+def query_uncle(A, B):
+    return f"parent_of(Z, {B}), parent_of(X, Z), parent_of(X, {A}), male({A}), {A} \\= Z"
+
+def query_aunt(A, B):
+    return f"parent_of(Z, {B}), parent_of(X, Z), parent_of(X, {A}), female({A}), {A} \\= Z"
+
+def query_relative(A, B):
+    return f"related({A}, {B})"
+
+
+
+def query_who_siblings(A):
+    return f"parent_of(X, {A}), parent_of(X, Y), {A} \\= Y"
+
+def query_who_sisters(A):
+    return f"parent_of(X, {A}), parent_of(X, Y), female(Y), {A} \\= Y"
+
+def query_who_brothers(A):
+    return f"parent_of(X, {A}), parent_of(X, Y), male(Y), {A} \\= Y"
+
+def query_who_mother(A):
+    return f"parent_of(X, {A}), female(X)"
+
+def query_who_father(A):
+    return f"parent_of(X, {A}), male(X)"
+
+def query_who_parents(A):
+    return f"parent_of(X, {A})"
+
+def query_who_daughters(A):
+    return f"parent_of({A}, X), female(X)"
+
+def query_who_sons(A):
+    return f"parent_of({A}, X), male(X)"
+
+def query_who_children(A):
+    return f"parent_of({A}, X)"
