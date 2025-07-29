@@ -1,5 +1,12 @@
 from pyswip import Prolog
-from relationships import prolog, assertz, mother, father, son, daughter, child, children
+from relationships import (
+    prolog, assertz,
+    mother, father, son, daughter, child, children,
+    sibling, aunt, uncle, sister, brother,
+    grandmother, grandfather
+)
+
+import re
 
 
 family = Prolog()
@@ -24,21 +31,22 @@ relationships = {
 }
 
 statement_patterns = {
-     "{A} and {B} are siblings.": "sibling({A},{B})",
-    "{A} is a sister of {B}.": "sister({A},{B})",
-    "{A} is the mother of {B}.": "mother({A},{B})",
-    "{A} is a grandmother of {B}.": "grandmother({A},{B})",
-    "{A} is a child of {B}.": "child({A},{B})",
-    "{A} is a daughter of {B}.": "daughter({A},{B})",
-    "{A} is an uncle of {B}.": "uncle({A},{B})",
-    "{A} is a brother of {B}.": "brother({A},{B})",
-    "{A} is the father of {B}.": "father({A},{B})",
-    "{A} and {B} are the parents of {C}.": "parent({A},{B},{C})",
-    "{A} is a grandfather of {B}.": "grandfather({A},{B})",
-    "{A},{B} and {C} are children of {D}.": "children({A},{B},{C},{D})",
-    "{A} is a son of {B}.": "son({A},{B})",
-    "{A} is an aunt of {B}.": "aunt({A},{B})"
+    "{A} and {B} are siblings": "sibling({A}, {B})",
+    "{A} is a sister of {B}": "sister({A},{B})",
+    "{A} is the mother of {B}": "mother({A},{B})",
+    "{A} is a grandmother of {B}": "grandmother({A},{B})",
+    "{A} is a child of {B}": "child({A},{B})",
+    "{A} is a daughter of {B}": "daughter({A},{B})",
+    "{A} is an uncle of {B}": "uncle({A},{B})",
+    "{A} is a brother of {B}": "brother({A},{B})",
+    "{A} is the father of {B}": "father({A},{B})",
+    "{A} and {B} are the parents of {C}": "parent({A},{B},{C})",
+    "{A} is a grandfather of {B}": "grandfather({A},{B})",
+    "{A},{B} and {C} are children of {D}": "children({A},{B},{C},{D})",
+    "{A} is a son of {B}": "son({A},{B})",
+    "{A} is an aunt of {B}": "aunt({A},{B})"
 }
+
 
 question_patterns = {
     
@@ -68,51 +76,55 @@ question_patterns = {
     "Are {A} and {B} relatives?": lambda A, B: f"relative({A.lower()}, {B.lower()})"
 }
 
+
+
 def match_statement(text):
-    text = text.strip().lower()
+    text = text.strip().lower().rstrip(".,")  # normalize input
 
-    if " is the mother of " in text:
-        A, B = text.split(" is the mother of ")
-        assertz(mother(A.strip(), B.strip()))
-        return "✅ Got it!"
+    for pattern, logic in statement_patterns.items():
+        regex = pattern
+        regex = regex.replace("{A}", r"(?P<A>\w+)")
+        regex = regex.replace("{B}", r"(?P<B>\w+)")
+        regex = regex.replace("{C}", r"(?P<C>\w+)")
+        regex = regex.replace("{D}", r"(?P<D>\w+)")
 
-    elif " is the father of " in text:
-        A, B = text.split(" is the father of ")
-        assertz(father(A.strip(), B.strip()))
-        return "✅ Got it!"
+        match = re.fullmatch(regex, text, flags=re.IGNORECASE)
+        if match:
+            groups = {k: v.lower() for k, v in match.groupdict().items()}
 
-    elif " is the son of " in text:
-        A, B = text.split(" is the son of ")
-        assertz(son(A.strip(), B.strip()))
-        return "✅ Got it!"
+            # Dispatch to correct logic function
+            try:
+                if "mother(" in logic:
+                    return assertz(mother(groups['A'], groups['B'])) or "✅ Got it!"
+                elif "father(" in logic:
+                    return assertz(father(groups['A'], groups['B'])) or "✅ Got it!"
+                elif "daughter(" in logic:
+                    return assertz(daughter(groups['A'], groups['B'])) or "✅ Got it!"
+                elif "son(" in logic:
+                    return assertz(son(groups['A'], groups['B'])) or "✅ Got it!"
+                elif "child(" in logic:
+                    return assertz(child(groups['A'], groups['B'])) or "✅ Got it!"
+                elif "sibling(" in logic: 
+                    sibling(groups['A'], groups['B'])
+                    return "Got it!"
+                elif "brother(" in logic:
+                    return assertz(brother(groups['A'], groups['B'])) or "✅ Got it!"
+                elif "sister(" in logic:
+                    return assertz(sister(groups['A'], groups['B'])) or "✅ Got it!"
+                elif "uncle(" in logic:
+                    return assertz(uncle(groups['A'], groups['B'])) or "✅ Got it!"
+                elif "aunt(" in logic:
+                    return assertz(aunt(groups['A'], groups['B'])) or "✅ Got it!"
+                elif "grandmother(" in logic:
+                    return assertz(grandmother(groups['A'], groups['B'])) or "✅ Got it!"
+                elif "grandfather(" in logic:
+                    return assertz(grandfather(groups['A'], groups['B'])) or "✅ Got it!"
+            except Exception as e:
+                return f"❌ Error while asserting: {e}"
 
-    elif " is the daughter of " in text:
-        A, B = text.split(" is the daughter of ")
-        assertz(daughter(A.strip(), B.strip()))
-        return "✅ Got it!"
-
-    elif " is the child of " in text:
-        A, B = text.split(" is the child of ")
-        assertz(child(A.strip(), B.strip()))
-        return "✅ Got it!"
-
-    elif " are children of " in text:
-        names, parent = text.split(" are children of ")
-        names = names.replace(",", "").split(" and ")
-        if len(names) == 3:
-            A, B, C = [n.strip() for n in names]
-            assertz(children(A, B, C, parent.strip()))
-            return "✅ Got it!"
-        
-    if " is the mother of " in text:
-        A, B = text.split(" is the mother of ")
-        assertz(mother(A.strip(), B.strip()))
-        return "✅ Got it!"
-
-    return None
+    return "❓ I didn't understand that statement."
 
 
-import re
 
 def ask_question(text):
     for pattern, query_func in question_patterns.items():
