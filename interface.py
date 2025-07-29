@@ -79,8 +79,8 @@ question_patterns = {
 
     # Who-questions — all include X as the second argument
     "Who are the siblings of {A}?": lambda A: f"query_who_siblings({A.lower()}, X)",
-    "Who are the sisters of {A}?": lambda A: f"query_who_sisters({A.lower()}, X)",
-    "Who are the brothers of {A}?": lambda A: f"query_who_brothers({A.lower()}, X)",
+    "Who are the sisters of {A}?": lambda A: f"query_who_sister({A.lower()}, X)",
+    "Who are the brothers of {A}?": lambda A: f"query_who_brother({A.lower()}, X)",
     "Who is the mother of {A}?": lambda A: f"query_who_mother({A.lower()}, X)",
     "Who is the father of {A}?": lambda A: f"query_who_father({A.lower()}, X)",
     "Who are the parents of {A}?": lambda A: f"query_who_parents({A.lower()}, X)",

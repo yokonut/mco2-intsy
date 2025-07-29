@@ -112,6 +112,11 @@ query_who_grandparent(Person, X) :- grandparent_of(X, Person).
 query_who_uncle(Person, X) :- uncle_of(X, Person).
 query_who_aunt(Person, X) :- aunt_of(X, Person).
 query_who_children(Parent, X) :- child_of(X, Parent).
+query_who_brother(Person, X) :- brother_of(X, Person).
+query_who_sister(Person, X) :- sister_of(X, Person).
+query_who_parents(Person, X) :- parent_of(X, Person).
+
+
 
 
 
@@ -125,3 +130,11 @@ query_sister(X, Y) :- sister_of(X, Y).
 query_grandparent(X, Y) :- grandparent_of(X, Y).
 query_grandmother(X, Y) :- grandmother_of(X, Y).
 query_grandfather(X, Y) :- grandfather_of(X, Y).
+
+% Ancestor relationship (recursive)
+ancestor(X, Y) :- parent_of(X, Y).
+ancestor(X, Y) :- parent_of(X, Z), ancestor(Z, Y).
+
+
+
+
