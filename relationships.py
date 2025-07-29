@@ -13,12 +13,12 @@ def assertz(assertions):
             prolog.assertz(fact)
             temp_assertions.append(fact)
 
-        print("✅ I've learned something new.")
+        return "✅ I've learned something new."
 
     except Exception as e:
         for fact in temp_assertions:
             prolog.retract(fact)
-        print("❌ That's impossible! One or more statements contradict known facts.")
+        return "❌ That's impossible! One or more statements contradict known facts."
 
 def normalize(*args):
     return [a.lower() for a in args]
@@ -74,7 +74,7 @@ def sibling(A, B):
 
     if results:
         print("✅ I already knew they were siblings!")
-        return []
+        return [f"female({A})"]
     else:
         print("❌ I can’t confirm that unless I know who their shared parent is.")
         return []

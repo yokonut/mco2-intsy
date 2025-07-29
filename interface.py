@@ -95,30 +95,29 @@ def match_statement(text):
             # Dispatch to correct logic function
             try:
                 if "mother(" in logic:
-                    return assertz(mother(groups['A'], groups['B'])) or "✅ Got it!"
+                    return assertz(mother(groups['A'], groups['B']))
                 elif "father(" in logic:
-                    return assertz(father(groups['A'], groups['B'])) or "✅ Got it!"
+                    return assertz(father(groups['A'], groups['B']))
                 elif "daughter(" in logic:
-                    return assertz(daughter(groups['A'], groups['B'])) or "✅ Got it!"
+                    return assertz(daughter(groups['A'], groups['B']))
                 elif "son(" in logic:
-                    return assertz(son(groups['A'], groups['B'])) or "✅ Got it!"
+                    return assertz(son(groups['A'], groups['B']))
                 elif "child(" in logic:
-                    return assertz(child(groups['A'], groups['B'])) or "✅ Got it!"
+                    return assertz(child(groups['A'], groups['B']))
                 elif "sibling(" in logic: 
-                    sibling(groups['A'], groups['B'])
-                    return "Got it!"
+                    return sibling(groups['A'], groups['B'])   
                 elif "brother(" in logic:
-                    return assertz(brother(groups['A'], groups['B'])) or "✅ Got it!"
+                    return assertz(brother(groups['A'], groups['B'])) 
                 elif "sister(" in logic:
-                    return assertz(sister(groups['A'], groups['B'])) or "✅ Got it!"
+                    return assertz(sister(groups['A'], groups['B'])) 
                 elif "uncle(" in logic:
-                    return assertz(uncle(groups['A'], groups['B'])) or "✅ Got it!"
+                    return assertz(uncle(groups['A'], groups['B'])) 
                 elif "aunt(" in logic:
-                    return assertz(aunt(groups['A'], groups['B'])) or "✅ Got it!"
+                    return assertz(aunt(groups['A'], groups['B'])) 
                 elif "grandmother(" in logic:
-                    return assertz(grandmother(groups['A'], groups['B'])) or "✅ Got it!"
+                    return assertz(grandmother(groups['A'], groups['B'])) 
                 elif "grandfather(" in logic:
-                    return assertz(grandfather(groups['A'], groups['B'])) or "✅ Got it!"
+                    return assertz(grandfather(groups['A'], groups['B'])) 
             except Exception as e:
                 return f"❌ Error while asserting: {e}"
 
