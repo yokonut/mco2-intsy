@@ -85,6 +85,23 @@ relatives(X,Y) :- grandparent_of(X,Y).
 
 relatives(X,Y) :- grandparent_of(Y,X).
 
+
+
+
+
+
+
+% General sibling rule from sister/brother
+sibling(X, Y) :- sister(X, Y).
+sibling(X, Y) :- sister(Y, X).
+sibling(X, Y) :- brother(X, Y).
+sibling(X, Y) :- brother(Y, X).
+
+% Optionally add symmetry for sibling/2
+sibling(X, Y) :- sibling(Y, X).
+
+
+
 % Helper predicates for chatbot queries
 query_who_mother(Child, X) :- mother_of(X, Child).
 query_who_father(Child, X) :- father_of(X, Child).
@@ -94,6 +111,8 @@ query_who_grandmother(Person, X) :- grandmother_of(X, Person).
 query_who_grandparent(Person, X) :- grandparent_of(X, Person).
 query_who_uncle(Person, X) :- uncle_of(X, Person).
 query_who_aunt(Person, X) :- aunt_of(X, Person).
+query_who_children(Parent, X) :- child_of(X, Parent).
+
 
 
 query_mother(X, Y) :- mother_of(X, Y).

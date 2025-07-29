@@ -15,7 +15,7 @@ from relationships import (
     brother,
     grandmother,
     grandfather,
-    parent,, parent
+    parent,parent
 )
 
 import re
@@ -61,7 +61,7 @@ statement_patterns = {
 
 
 question_patterns = {
-    "Are {A} and {B} siblings?": lambda A, B: f"query_sibling({A.lower()}, {B.lower()})",
+    "Are {A} and {B} siblings?": lambda A, B: f"query_siblings({A.lower()}, {B.lower()})",
     "Is {A} a sister of {B}?": lambda A, B: f"query_sister({A.lower()}, {B.lower()})",
     "Is {A} a brother of {B}?": lambda A, B: f"query_brother({A.lower()}, {B.lower()})",
     "Is {A} the mother of {B}?": lambda A, B: f"query_mother({A.lower()}, {B.lower()})",
@@ -175,7 +175,15 @@ def ask_question(text):
                 except Exception as e:
                     return f"⚠️ Prolog error: {e}"
 
-            return f"📋 Answer: {', '.join(results)}" if results else "✅ Yes."
+            if results:
+                return f"📋 Answer: {', '.join(results)}"
+            else:
+    # Determine if it's a WH-question by checking if the pattern starts with 'Who'
+                if pattern.lower().startswith("who"):
+                    return "📋 Answer: No known results."
+                else:
+                    return "✅ Yes."
+
 
     return "❓ I don't understand the question."
 
