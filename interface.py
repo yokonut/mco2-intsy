@@ -1,7 +1,9 @@
 from pyswip import Prolog
+from relationships import prolog, assertz, mother, father, son, daughter, child, children
+
 
 family = Prolog()
-family.consult("rules.pl", relative_to=__file__)
+family.consult("rules.pl",relative_to=__file__)
 
 relationships = {
     "son",
@@ -18,11 +20,11 @@ relationships = {
     "niece",
     "siblings",
     "sisters",
-    "brothers",
+    "brothers"
 }
 
 statement_patterns = {
-    "{A} and {B} are siblings.": "sibling({A},{B})",
+     "{A} and {B} are siblings.": "sibling({A},{B})",
     "{A} is a sister of {B}.": "sister({A},{B})",
     "{A} is the mother of {B}.": "mother({A},{B})",
     "{A} is a grandmother of {B}.": "grandmother({A},{B})",
@@ -35,18 +37,126 @@ statement_patterns = {
     "{A} is a grandfather of {B}.": "grandfather({A},{B})",
     "{A},{B} and {C} are children of {D}.": "children({A},{B},{C},{D})",
     "{A} is a son of {B}.": "son({A},{B})",
-    "{A} is an aunt of {B}.": "aunt({A},{B})",
+    "{A} is an aunt of {B}.": "aunt({A},{B})"
 }
 
+question_patterns = {
+    
+    "Are {A} and {B} siblings?": lambda A, B: f"sibling({A.lower()}, {B.lower()})",
+    "Is {A} a sister of {B}?": lambda A, B: f"sister({A.lower()}, {B.lower()})",
+    "Is {A} a brother of {B}?": lambda A, B: f"brother({A.lower()}, {B.lower()})",
+    "Is {A} the mother of {B}?": lambda A, B: f"mother({A.lower()}, {B.lower()})",
+    "Is {A} the father of {B}?": lambda A, B: f"father({A.lower()}, {B.lower()})",
+    "Are {A} and {B} the parents of {C}?": lambda A, B, C: f"parent({A.lower()}, {C.lower()}) , parent({B.lower()}, {C.lower()})",
+    "Is {A} a grandmother of {B}?": lambda A, B: f"grandmother({A.lower()}, {B.lower()})",
+    "Is {A} a daughter of {B}?": lambda A, B: f"daughter({A.lower()}, {B.lower()})",
+    "Is {A} a son of {B}?": lambda A, B: f"son({A.lower()}, {B.lower()})",
+    "Is {A} a child of {B}?": lambda A, B: f"child({A.lower()}, {B.lower()})",
+    "Are {A}, {B} and {C} children of {D}?": lambda A, B, C, D: f"child({A.lower()}, {D.lower()}) , child({B.lower()}, {D.lower()}) , child({C.lower()}, {D.lower()})",
+    "Is {A} an uncle of {B}?": lambda A, B: f"uncle({A.lower()}, {B.lower()})",
+    "Who are the siblings of {A}?": lambda A: f"sibling(X, {A.lower()})",
+    "Who are the sisters of {A}?": lambda A: f"sister(X, {A.lower()})",
+    "Who are the brothers of {A}?": lambda A: f"brother(X, {A.lower()})",
+    "Who is the mother of {A}?": lambda A: f"mother(X, {A.lower()})",
+    "Who is the father of {A}?": lambda A: f"father(X, {A.lower()})",
+    "Who are the parents of {A}?": lambda A: f"parent(X, {A.lower()})",
+    "Is {A} a grandfather of {B}?": lambda A, B: f"grandfather({A.lower()}, {B.lower()})",
+    "Who are the daughters of {A}?": lambda A: f"daughter(X, {A.lower()})",
+    "Who are the sons of {A}?": lambda A: f"son(X, {A.lower()})",
+    "Who are the children of {A}?": lambda A: f"child(X, {A.lower()})",
+    "Is {A} an aunt of {B}?": lambda A, B: f"aunt({A.lower()}, {B.lower()})",
+    "Are {A} and {B} relatives?": lambda A, B: f"relative({A.lower()}, {B.lower()})"
+}
 
-# TO DO: Figure out how to parse sentences and determine which sentences are valid
+def match_statement(text):
+    text = text.strip().lower()
+
+    if " is the mother of " in text:
+        A, B = text.split(" is the mother of ")
+        assertz(mother(A.strip(), B.strip()))
+        return "✅ Got it!"
+
+    elif " is the father of " in text:
+        A, B = text.split(" is the father of ")
+        assertz(father(A.strip(), B.strip()))
+        return "✅ Got it!"
+
+    elif " is the son of " in text:
+        A, B = text.split(" is the son of ")
+        assertz(son(A.strip(), B.strip()))
+        return "✅ Got it!"
+
+    elif " is the daughter of " in text:
+        A, B = text.split(" is the daughter of ")
+        assertz(daughter(A.strip(), B.strip()))
+        return "✅ Got it!"
+
+    elif " is the child of " in text:
+        A, B = text.split(" is the child of ")
+        assertz(child(A.strip(), B.strip()))
+        return "✅ Got it!"
+
+    elif " are children of " in text:
+        names, parent = text.split(" are children of ")
+        names = names.replace(",", "").split(" and ")
+        if len(names) == 3:
+            A, B, C = [n.strip() for n in names]
+            assertz(children(A, B, C, parent.strip()))
+            return "✅ Got it!"
+
+    return None
+
+
+import re
+
+def ask_question(text):
+    for pattern, query_func in question_patterns.items():
+        regex = pattern
+        regex = regex.replace("{A}", r"(?P<A>\w+)")
+        regex = regex.replace("{B}", r"(?P<B>\w+)")
+        regex = regex.replace("{C}", r"(?P<C>\w+)")
+        regex = regex.replace("{D}", r"(?P<D>\w+)")
+
+        match = re.fullmatch(regex, text, re.IGNORECASE)
+        if match:
+            groups = match.groupdict()
+            query = query_func(**groups)
+
+            results = []
+            for sub_query in [q.strip() for q in query.split(",")]:
+                if "X" in sub_query:  # WH-question
+                    result = list(prolog.query(sub_query))
+                    if result:
+                        results.extend([res['X'].capitalize() for res in result])
+                else:  # Yes/No question
+                    result = list(prolog.query(sub_query))
+                    if not result:
+                        return "❌ No."
+            return f"📋 Answer: {', '.join(results)}" if results else "✅ Yes."
+
+    return "❓ I don't understand the question."
+
+
+#TO DO: Figure out how to parse sentences and determine which sentences are valid
 # Deal with some flaws of implications and with contingencies and contradictions
+assertz(mother("Michelle", "Yohan"))
 
 
-family.retractall
-family.assertz("male(jerry)")
-family.assertz("parent_of(ben,jerry)")
+def process_input(text):
+    if text.endswith("?"):
+        return ask_question(text)
+    else:
+        result = match_statement(text)
+        if result:
+            return result
+        else:
+            return "I don't understand the statement..."
 
-results = list(family.query("son_of(jerry, X)"))
-print("son_of():", results)
-print("Result is:", "True" if results else "False")
+if __name__ == "__main__":
+    print("👨‍👩‍👧 Family Tree Chatbot\nType 'exit' to quit.")
+    while True:
+        inp = input("🗨️  You: ")
+        if inp.lower() == "exit":
+            break
+        response = process_input(inp)
+        print("Bot:", response)
