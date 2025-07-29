@@ -1,0 +1,19 @@
+<!DOCTYPE html>
+<html>
+<head>
+<script src="https://cdn.tailwindcss.com"></script>
+<title>CHATBUNNY</title>
+</head>
+
+<body>
+    <h1>🔍 Query Family Relationships</h1>
+    <form method="POST">
+        <input type="text" name="query" placeholder="e.g. son_of(jerry, X)">
+        <input type="submit" value="Check">
+    </form>
+    {% if result %}
+        <h3>Result:</h3>
+        <pre>{{ result }}</pre>
+    {% endif %}
+</body>
+</html>
