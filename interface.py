@@ -1,7 +1,7 @@
 from pyswip import Prolog
 
 family = Prolog()
-family.consult("rules.pl",relative_to=__file__)
+family.consult("rules.pl", relative_to=__file__)
 
 relationships = {
     "son",
@@ -18,7 +18,7 @@ relationships = {
     "niece",
     "siblings",
     "sisters",
-    "brothers"
+    "brothers",
 }
 
 statement_patterns = {
@@ -35,16 +35,12 @@ statement_patterns = {
     "{A} is a grandfather of {B}.": "grandfather({A},{B})",
     "{A},{B} and {C} are children of {D}.": "children({A},{B},{C},{D})",
     "{A} is a son of {B}.": "son({A},{B})",
-    "{A} is an aunt of {B}.": "aunt({A},{B})"
+    "{A} is an aunt of {B}.": "aunt({A},{B})",
 }
 
 
-
-
-#TO DO: Figure out how to parse sentences and determine which sentences are valid
+# TO DO: Figure out how to parse sentences and determine which sentences are valid
 # Deal with some flaws of implications and with contingencies and contradictions
-
-
 
 
 family.retractall
@@ -54,4 +50,3 @@ family.assertz("parent_of(ben,jerry)")
 results = list(family.query("son_of(jerry, X)"))
 print("son_of():", results)
 print("Result is:", "True" if results else "False")
-    

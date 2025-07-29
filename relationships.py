@@ -24,41 +24,41 @@ def normalize(A,B):
     return A.lower(), B.lower()
 
 def mother(A,B):
-    normalize(A,B)
+    A,B = normalize(A,B)
     assertions = []
     assertions.append(f"parent_of({A},{B})")
     assertions.append(f"female({A})")
     return assertions
 
 def father(A,B):
-    normalize(A,B)
+    A,B = normalize(A,B)
     assertions = []
     assertions.append(f"parent_of({A},{B})")
     assertions.append(f"male({A})")
     return assertions
 
 def son(A,B):
-    normalize(A,B)
+    A,B = normalize(A,B)
     assertions = []
     assertions.append(f"parent_of({B},{A})")
     assertions.append(f"male({A})")
     return assertions
 
 def daughter(A,B):
-    normalize(A,B)
+    A,B = normalize(A,B)
     assertions = []
     assertions.append(f"parent_of({B},{A})")
     assertions.append(f"female({A})")
     return assertions
 
 def child(A,B):
-    normalize(A,B)
+    A,B = normalize(A,B)
     assertions = []
     assertions.append(f"parent_of({B},{A})")
     return assertions
 
 def children(A,B,C,D):
-    normalize(A,B,C,D)
+    A,B,C,D = normalize(A,B,C,D)
     assertions = []
     assertions.append(f"parent_of({D},{A})")
     assertions.append(f"parent_of({D},{B})")
