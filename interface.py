@@ -120,7 +120,7 @@ def match_statement(text):
                 elif "child(" in logic:
                     return assertz(child(groups["A"], groups["B"]))
                 elif "sibling(" in logic:
-                    return sibling(groups["A"], groups["B"])
+                    return assertz(sibling(groups["A"], groups["B"]))
                 elif "brother(" in logic:
                     return assertz(brother(groups["A"], groups["B"]))
                 elif "sister(" in logic:
@@ -159,22 +159,23 @@ def ask_question(text):
             groups = {k: v.lower() for k, v in match.groupdict().items()}
             query = query_func(**groups)
 
-            results = []
+            results = set()
             for sub_query in query.split("&&"):
                 sub_query = sub_query.strip()
 
                 try:
                     if "X" in sub_query:
                         for solution in prolog.query(sub_query):
-                            results.append(solution["X"].capitalize())
+                            results.add(solution["X"].capitalize())  # add to set
                     else:
                         if not list(prolog.query(sub_query)):
                             return "❌ No."
                 except Exception as e:
                     return f"⚠️ Prolog error: {e}"
 
+
             if results:
-                return f"📋 Answer: {', '.join(results)}"
+                return f"📋 Answer: {', '.join(sorted(results))}"
             else:
     # Determine if it's a WH-question by checking if the pattern starts with 'Who'
                 if pattern.lower().startswith("who"):

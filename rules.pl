@@ -102,30 +102,32 @@ nephew_of(X,Y) :- male(X),
 niece_of(X,Y) :- female(X),
     (uncle_of(Y,X) ; aunt_of(Y,X)).
 
-relatives(X,Y) :- siblings(X,Y).
+% Core relationships
+relatives(X, Y) :- siblings(X, Y).
+relatives(X, Y) :- parent_of(X, Y).
+relatives(X, Y) :- parent_of(Y, X).
+relatives(X, Y) :- grandparent_of(X, Y).
+relatives(X, Y) :- grandparent_of(Y, X).
 
-relatives(X,Y) :- parent_of(X,Y).
+% Aunts and uncles
+relatives(X, Y) :- uncle_of(X, Y).
+relatives(X, Y) :- aunt_of(X, Y).
+relatives(X, Y) :- uncle_of(Y, X).
+relatives(X, Y) :- aunt_of(Y, X).
 
-relatives(X,Y) :- parent_of(Y,X).
-
-relatives(X,Y) :- grandparent_of(X,Y).
-
-relatives(X,Y) :- grandparent_of(Y,X).
-
-
-
-
+% General ancestor/descendant relationship (optional)
+relatives(X, Y) :- ancestor(X, Y).
+relatives(X, Y) :- ancestor(Y, X).
 
 
 
-% General sibling rule from sister/brother
-sibling(X, Y) :- sister(X, Y).
-sibling(X, Y) :- sister(Y, X).
-sibling(X, Y) :- brother(X, Y).
-sibling(X, Y) :- brother(Y, X).
 
-% Optionally add symmetry for sibling/2
-sibling(X, Y) :- sibling(Y, X).
+
+
+
+
+
+
 
 
 
@@ -142,6 +144,15 @@ query_who_children(Parent, X) :- child_of(X, Parent).
 query_who_brother(Person, X) :- brother_of(X, Person).
 query_who_sister(Person, X) :- sister_of(X, Person).
 query_who_parents(Person, X) :- parent_of(X, Person).
+query_who_sons(Person, X) :-
+    parent_of(Person, X),
+    male(X).
+query_who_daughters(Person, X) :-
+    parent_of(Person, X),
+    female(X).
+
+
+
 
 
 
@@ -158,11 +169,14 @@ query_grandparent(X, Y) :- grandparent_of(X, Y).
 query_grandmother(X, Y) :- grandmother_of(X, Y).
 query_grandfather(X, Y) :- grandfather_of(X, Y).
 query_child(X, Y) :- child_of(X, Y).
+
 query_children_of(A, B, C, D) :-
     child_of(A, D),
     child_of(B, D),
     child_of(C, D).
 
+query_relative(X, Y) :-
+    relatives(X, Y).
 
 % Ancestor relationship (recursive)
 ancestor(X, Y) :- parent_of(X, Y).
