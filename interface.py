@@ -21,6 +21,9 @@ from relationships import (
 import re
 prolog.consult("rules.pl", relative_to=__file__)
 
+def handle_user_input(text):
+    return process_input(text)
+
 
 relationships = {
     "son",
