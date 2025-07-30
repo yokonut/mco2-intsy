@@ -1,0 +1,82 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <script src="https://cdn.tailwindcss.com"></script>
+  <link href="https://fonts.googleapis.com/css2?family=Comfortaa&display=swap" rel="stylesheet">
+  <title>Ask me questions!</title>
+</head>
+
+<body style="margin:0; background-color:#FFF5EE; font-family:'Comfortaa', cursive; overflow:hidden; height:100vh; color:#572542;">
+
+  <!-- Title -->
+  <h1 style="font-size: 2.5rem; font-weight: bold; text-align: center; margin-top: 20px; margin-bottom: 40px;">
+    ChatBunny
+  </h1>
+
+  <!-- Message display -->
+  <div id="contents" class="flex flex-col items-center justify-center h-screen">
+    <div id="user-query" class="flex justify-center items-center flex-col
+                 bg-[#FABABB] rounded-full w-[1200px] h-[80px] mb-[80px] ml-[80px]">
+    </div>
+    <div id="bot-ans" class="flex justify-center items-center flex-col
+                 bg-[#FABABB] rounded-full w-[1200px] h-[80px] mb-[20px] -ml-[80px]">
+    </div>
+  </div>
+
+  <!-- Chat input form -->
+  <div id="answer-form"
+       style="position: absolute; bottom: 20px; left: 50%; transform: translateX(-50%);
+              border-radius: 90px; overflow: hidden; display: flex; justify-content: center; align-items: center;
+              box-shadow: 0 6px 20px rgba(0, 0, 0, 0.15); ">
+    <form onsubmit="handleSubmit(event)"
+          style="background-color: #fff; padding: 20px; border-radius: 40px;
+                 box-shadow: 0 6px 20px rgba(0, 0, 0, 0.15); display: flex; gap: 20px; align-items: center;">
+      <input type="text" id="user-question" name="query" placeholder="Ask/tell me anything!"
+             style="padding: 20px; font-size: 24px; width: 1200px; outline: none;">
+      <input type="image" src="{{ url_for('static', filename='img/submit-bunny.png') }}"
+             alt="Send with Bunny Magic"
+             style="width: 80px; height: 80px; border: none; cursor: pointer;">
+    </form>
+  </div>
+
+  <!-- JavaScript: typewriter + POST request -->
+  <script>
+    function typeWriter(text, element, speed = 50) {
+      element.innerHTML = "";
+      let i = 0;
+      function type() {
+        if (i < text.length) {
+          element.innerHTML += text.charAt(i);
+          i++;
+          setTimeout(type, speed);
+        }
+      }
+      type();
+    }
+
+    function handleSubmit(event) {
+      event.preventDefault();
+
+      const question = document.getElementById("user-question").value;
+      const userBubble = document.getElementById("user-query");
+      const botBubble = document.getElementById("bot-ans");
+
+      userBubble.innerHTML = question;
+
+      fetch("/chat", {
+        method: "POST",
+        headers: { "Content-Type": "application/x-www-form-urlencoded" },
+        body: `query=${encodeURIComponent(question)}`
+      })
+      .then(response => response.json())
+      .then(data => {
+        typeWriter(data.response, botBubble);
+      });
+
+      document.getElementById("user-question").value = "";
+    }
+  </script>
+
+</body>
+</html>
+

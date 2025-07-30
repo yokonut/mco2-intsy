@@ -1,4 +1,5 @@
 from pyswip import Prolog
+import re
 
 family = Prolog()
 family.consult("rules.pl",relative_to=__file__)
@@ -106,7 +107,13 @@ question_patterns = {
 
 family.retractall
 family.assertz("male(jerry)")
-family.assertz("parent_of(ben,jerry)")
+family.assertz("male(ben)")
+family.assertz("female(sarah)")
+family.assertz("female(emma)")
+family.assertz("parent_of(ben, jerry)")
+family.assertz("parent_of(sarah, jerry)")
+family.assertz("parent_of(ben, emma)")
+family.assertz("parent_of(sarah, emma)")
 
 results = list(family.query("son_of(jerry, X)"))
 print("son_of():", results)

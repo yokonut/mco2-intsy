@@ -26,6 +26,7 @@ def normalize(*args):
 
 def mother(A,B):
     A, B = normalize(A,B)
+    A, B = normalize(A,B)
     assertions = []
     assertions.append(f"parent_of({A},{B})")
     assertions.append(f"female({A})")
@@ -59,7 +60,7 @@ def child(A,B):
     return assertions
 
 def children(A,B,C,D):
-    A,B,C,D = normalize(A,B,C,D)
+    normalize(A,B,C,D)
     assertions = []
     assertions.append(f"parent_of({D},{A})")
     assertions.append(f"parent_of({D},{B})")
