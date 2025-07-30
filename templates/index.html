@@ -1,24 +1,22 @@
 <!DOCTYPE html>
-<!--disable scr-->
 <html>
 
 <head>
-<script src="https://cdn.tailwindcss.com"></script>
-<link href="https://fonts.googleapis.com/css2?family=Comfortaa&display=swap" rel="stylesheet">
-
-<div class="absolute top-3 left-3">
-<title>Welcome to ChatBunny!</title>
-<h1 style="font-family: 'Comfortaa', cursive; font-size: 2.5rem; font-weight: bold;">ChatBunny</h1>
-</div>
+    <script src="https://cdn.tailwindcss.com"></script>
+    <link href="https://fonts.googleapis.com/css2?family=Comfortaa&display=swap" rel="stylesheet">
+    <title>Welcome to ChatBunny!</title>
 </head>
 
-<body style="background-color: #F191AF;" class ="min-h-screen flex flex-col items-center mt-[250px] text-white">
+<body style="background-color: #F191AF;" class="min-h-screen flex flex-col items-center mt-[250px] text-white">
+    <div class="absolute top-3 left-3">
+        <h1 style="font-family: 'Comfortaa', cursive; font-size: 2.5rem; font-weight: bold;">ChatBunny</h1>
+    </div>
     <div class="flex items-center justify-center">
-<button type="button" class="hover:scale-105 transition-transform duration-300" onclick="window.location.href='{{ url_for('chat') }}'">
-    <img src="{{ url_for('static', filename='img/start-bunny.png') }}" style="height: 350px;">
-</button>
+        <button type="button" class="hover:scale-105 transition-transform duration-300"
+            data-href="{{ url_for('chat') }}" onclick="window.location.href=this.getAttribute('data-href')">
+            <img src="{{ url_for('static', filename='img/start-bunny.png') }}" style="height: 350px;">
+        </button>
     </div>
 </body>
-
 
 </html>
