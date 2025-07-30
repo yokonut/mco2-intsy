@@ -44,9 +44,7 @@ statement_patterns = {
     "{A} is an aunt of {B}.": "aunt({A},{B})"
 }
 
-# Updated question patterns to match exactly the sentence patterns from the image
 question_patterns = {
-    # Yes/No questions (left column)
     "Are {A} and {B} siblings?": lambda A, B: f"query_sibling({A.lower()}, {B.lower()})",
     "Is {A} a sister of {B}?": lambda A, B: f"query_sister({A.lower()}, {B.lower()})",
     "Is {A} a brother of {B}?": lambda A, B: f"query_brother({A.lower()}, {B.lower()})",
@@ -63,7 +61,7 @@ question_patterns = {
     "Is {A} an aunt of {B}?": lambda A, B: f"query_aunt({A.lower()}, {B.lower()})",
     "Are {A} and {B} relatives?": lambda A, B: f"query_relative({A.lower()}, {B.lower()})",
 
-    # WHO-type queries (right column)
+    # WHO-type queries
     "Who are the siblings of {A}?": lambda A: f"query_who_siblings({A.lower()})",
     "Who are the sisters of {A}?": lambda A: f"query_who_sisters({A.lower()})",
     "Who are the brothers of {A}?": lambda A: f"query_who_brothers({A.lower()})",
@@ -75,26 +73,23 @@ question_patterns = {
     "Who are the children of {A}?": lambda A: f"query_who_children({A.lower()})"
 }
 
-#TO DO: Figure out how to parse sentences and determine which sentences are valid
-# Deal with some flaws of implications and with contingencies and contradictions
-
 # Initialize some test data
 family.retractall("male(_)")
 family.retractall("female(_)")
 family.retractall("parent_of(_,_)")
 
-family.assertz("male(jerry)")
-family.assertz("male(ben)")
+family.assertz("male(john)")
+family.assertz("male(mike)")
 family.assertz("female(sarah)")
 family.assertz("female(emma)")
-family.assertz("parent_of(ben, jerry)")
-family.assertz("parent_of(sarah, jerry)")
-family.assertz("parent_of(ben, emma)")
+family.assertz("parent_of(john, mike)")
+family.assertz("parent_of(sarah, mike)")
+family.assertz("parent_of(john, emma)")
 family.assertz("parent_of(sarah, emma)")
 
 # Test query to verify setup
 try:
-    results = list(family.query("son_of(jerry, X)"))
+    results = list(family.query("son_of(mike, X)"))
     print("son_of():", results)
     print("Result is:", "True" if results else "False")
 except Exception as e:
