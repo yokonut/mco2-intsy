@@ -1,12 +1,14 @@
 <!DOCTYPE html>
 <html lang="en">
+
 <head>
   <script src="https://cdn.tailwindcss.com"></script>
   <link href="https://fonts.googleapis.com/css2?family=Comfortaa&display=swap" rel="stylesheet">
   <title>Ask me questions!</title>
 </head>
 
-<body style="margin:0; background-color:#FFF5EE; font-family:'Comfortaa', cursive; overflow:hidden; height:100vh; color:#572542;">
+<body
+  style="margin:0; background-color:#FFF5EE; font-family:'Comfortaa', cursive; overflow:hidden; height:100vh; color:#572542;">
 
   <!-- Title -->
   <h1 style="font-size: 2.5rem; font-weight: bold; text-align: center; margin-top: 20px; margin-bottom: 20px;">
@@ -19,18 +21,15 @@
   </div>
 
   <!-- Chat input form -->
-  <div id="answer-form"
-       style="position: absolute; bottom: 20px; left: 50%; transform: translateX(-50%);
+  <div id="answer-form" style="position: absolute; bottom: 20px; left: 50%; transform: translateX(-50%);
               border-radius: 90px; overflow: hidden; display: flex; justify-content: center; align-items: center;
               box-shadow: 0 6px 20px rgba(0, 0, 0, 0.15); ">
-    <form onsubmit="handleSubmit(event)"
-          style="background-color: #fff; padding: 20px; border-radius: 40px;
+    <form onsubmit="handleSubmit(event)" style="background-color: #fff; padding: 20px; border-radius: 40px;
                  box-shadow: 0 6px 20px rgba(0, 0, 0, 0.15); display: flex; gap: 20px; align-items: center;">
       <input type="text" id="user-question" name="query" placeholder="Ask/tell me anything!"
-             style="padding: 20px; font-size: 24px; width: 1200px; outline: none;">
-      <input type="image" src="{{ url_for('static', filename='img/submit-bunny.png') }}"
-             alt="Send with Bunny Magic"
-             style="width: 80px; height: 80px; border: none; cursor: pointer;">
+        style="padding: 20px; font-size: 24px; width: 1200px; outline: none;">
+      <input type="image" src="{{ url_for('static', filename='img/submit-bunny.png') }}" alt="Send with Bunny Magic"
+        style="width: 80px; height: 80px; border: none; cursor: pointer;">
     </form>
   </div>
 
@@ -41,7 +40,11 @@
       let i = 0;
       function type() {
         if (i < text.length) {
-          element.innerHTML += text.charAt(i);
+          if (text.charAt(i) === '\n') {
+            element.innerHTML += '<br>';
+          } else {
+            element.innerHTML += text.charAt(i);
+          }
           i++;
           setTimeout(type, speed);
         }
@@ -53,6 +56,7 @@
       const bubble = document.createElement("div");
       bubble.className = `rounded-full px-6 py-4 text-lg w-[1200px]`;
       bubble.style.backgroundColor = color;
+      bubble.style.whiteSpace = 'pre-line'; // Preserve line breaks
       bubble.textContent = content;
       return bubble;
     }
@@ -69,27 +73,28 @@
         headers: { "Content-Type": "application/x-www-form-urlencoded" },
         body: `query=${encodeURIComponent(question)}`
       })
-      .then(response => response.json())
-      .then(data => {
-        contents.innerHTML = ""; // Reset and rebuild log
+        .then(response => response.json())
+        .then(data => {
+          contents.innerHTML = ""; // Reset and rebuild log
 
-        data.log.forEach((msg, index) => {
-          const userBubble = createBubble(msg.user, "#FABABB");
-          const botBubble = createBubble("", "#FFD3DA");
-          contents.appendChild(userBubble);
-          contents.appendChild(botBubble);
+          data.log.forEach((msg, index) => {
+            const userBubble = createBubble(msg.user, "#FABABB");
+            const botBubble = createBubble("", "#FFD3DA");
+            contents.appendChild(userBubble);
+            contents.appendChild(botBubble);
 
-          if (index === data.log.length - 1) {
-            typeWriter(msg.bot, botBubble);
-          } else {
-            botBubble.textContent = msg.bot;
-          }
+            if (index === data.log.length - 1) {
+              typeWriter(msg.bot, botBubble);
+            } else {
+              botBubble.textContent = msg.bot;
+            }
+          });
         });
-      });
 
       document.getElementById("user-question").value = "";
     }
   </script>
 
 </body>
+
 </html>

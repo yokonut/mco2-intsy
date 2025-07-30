@@ -113,35 +113,75 @@ def match_statement(text):
             # Dispatch to correct logic function
             try:
                 if "mother(" in logic:
-                    return assertz(mother(groups["A"], groups["B"]))
+                    result = assertz(mother(groups["A"], groups["B"]))
+                    if isinstance(result, str) and result.startswith("❌"):
+                        return result
+                    return result if result else "✅ I've learned something new."
                 elif "father(" in logic:
-                    return assertz(father(groups["A"], groups["B"]))
+                    result = assertz(father(groups["A"], groups["B"]))
+                    if isinstance(result, str) and result.startswith("❌"):
+                        return result
+                    return result if result else "✅ I've learned something new."
                 elif "daughter(" in logic:
-                    return assertz(daughter(groups["A"], groups["B"]))
+                    result = assertz(daughter(groups["A"], groups["B"]))
+                    if isinstance(result, str) and result.startswith("❌"):
+                        return result
+                    return result if result else "✅ I've learned something new."
                 elif "son(" in logic:
-                    return assertz(son(groups["A"], groups["B"]))
+                    result = assertz(son(groups["A"], groups["B"]))
+                    if isinstance(result, str) and result.startswith("❌"):
+                        return result
+                    return result if result else "✅ I've learned something new."
                 elif "child(" in logic:
-                    return assertz(child(groups["A"], groups["B"]))
+                    result = assertz(child(groups["A"], groups["B"]))
+                    if isinstance(result, str) and result.startswith("❌"):
+                        return result
+                    return result if result else "✅ I've learned something new."
                 elif "sibling(" in logic:
-                    return sibling(groups["A"], groups["B"])
+                    result = sibling(groups["A"], groups["B"])
+                    return result
                 elif "brother(" in logic:
-                    return assertz(brother(groups["A"], groups["B"]))
+                    result = assertz(brother(groups["A"], groups["B"]))
+                    if isinstance(result, str) and result.startswith("❌"):
+                        return result
+                    return result if result else "✅ I've learned something new."
                 elif "sister(" in logic:
-                    return assertz(sister(groups["A"], groups["B"]))
+                    result = assertz(sister(groups["A"], groups["B"]))
+                    if isinstance(result, str) and result.startswith("❌"):
+                        return result
+                    return result if result else "✅ I've learned something new."
                 elif "uncle(" in logic:
-                    return assertz(uncle(groups["A"], groups["B"]))
+                    result = assertz(uncle(groups["A"], groups["B"]))
+                    if isinstance(result, str) and result.startswith("❌"):
+                        return result
+                    return result if result else "✅ I've learned something new."
                 elif "aunt(" in logic:
-                    return assertz(aunt(groups["A"], groups["B"]))
+                    result = assertz(aunt(groups["A"], groups["B"]))
+                    if isinstance(result, str) and result.startswith("❌"):
+                        return result
+                    return result if result else "✅ I've learned something new."
                 elif "grandmother(" in logic:
-                    return assertz(grandmother(groups["A"], groups["B"]))
+                    result = assertz(grandmother(groups["A"], groups["B"]))
+                    if isinstance(result, str) and result.startswith("❌"):
+                        return result
+                    return result if result else "✅ I've learned something new."
                 elif "grandfather(" in logic:
-                    return assertz(grandfather(groups["A"], groups["B"]))
+                    result = assertz(grandfather(groups["A"], groups["B"]))
+                    if isinstance(result, str) and result.startswith("❌"):
+                        return result
+                    return result if result else "✅ I've learned something new."
                 elif "children(" in logic:
-                    return assertz(
+                    result = assertz(
                         children(groups["A"], groups["B"], groups["C"], groups["D"])
                     )
+                    if isinstance(result, str) and result.startswith("❌"):
+                        return result
+                    return result if result else "✅ I've learned something new."
                 elif "parent(" in logic:
-                    return assertz(parent(groups["A"], groups["B"], groups["C"]))
+                    result = assertz(parent(groups["A"], groups["B"], groups["C"]))
+                    if isinstance(result, str) and result.startswith("❌"):
+                        return result
+                    return result if result else "✅ I've learned something new."
             except Exception as e:
                 return f"❌ Error while asserting: {e}"
 
