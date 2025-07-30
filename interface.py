@@ -1,5 +1,8 @@
 from pyswip import Prolog
 import re
+import io
+import sys
+from contextlib import redirect_stdout
 from relationships import *
 
 family = Prolog()
@@ -8,6 +11,17 @@ family.consult("rules.pl",relative_to=__file__)
 # Update the relationships module to use our family instance
 import relationships
 relationships.prolog = family
+
+def capture_output(func, *args, **kwargs):
+    """Capture print output and return it as a string"""
+    buf = io.StringIO()
+    with redirect_stdout(buf):
+        result = func(*args, **kwargs)
+    output = buf.getvalue().strip()
+    # If the function returns something non-empty, prefer that
+    if result and isinstance(result, str) and result.strip():
+        return result
+    return output
 
 relationships = {
     "son",
@@ -276,10 +290,10 @@ def handle_user_input(user_input):
     
     # Check if it's a question (contains "?" or question words)
     if "?" in user_input or any(word in user_input.lower() for word in ["who", "what", "when", "where", "why", "how"]):
-        return process_question(user_input)
+        return capture_output(process_question, user_input)
     # Check if it's a statement (contains words like "is", "are", "of")
     elif any(word in user_input.lower() for word in ["is", "are", "of"]):
-        return process_statement(user_input)
+        return capture_output(process_statement, user_input)
     else:
         return "🤔 Please ask a question or make a statement about family relationships."
     
