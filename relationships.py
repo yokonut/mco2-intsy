@@ -1,6 +1,22 @@
 from pyswip import Prolog
 prolog = Prolog()
 
+def infer_and_assert_siblings_from_parent(parent):
+    try:
+        children = [res["X"] for res in prolog.query(f"parent_of({parent}, X)")]
+        for i in range(len(children)):
+            for j in range(i+1, len(children)):
+                a = children[i]
+                b = children[j]
+                try:
+                    prolog.assertz(f"siblings({a}, {b})")
+                    prolog.assertz(f"siblings({b}, {a})")
+                except:
+                    pass
+    except Exception as e:
+        print(f"⚠️ Failed to infer siblings from parent {parent}: {e}")
+
+
 
 def is_descendant_of(descendant, ancestor):
     try:
@@ -127,6 +143,7 @@ def son(A,B):
     assertions = []
     assertions.append(f"parent_of({B},{A})")
     assertions.append(f"male({A})")
+    infer_and_assert_siblings_from_parent(B)
     return assertions
 
 def daughter(A,B):
@@ -139,6 +156,7 @@ def daughter(A,B):
     assertions = []
     assertions.append(f"parent_of({B},{A})")
     assertions.append(f"female({A})")
+    infer_and_assert_siblings_from_parent(B)
     return assertions
 
 def child(A,B):
@@ -289,18 +307,41 @@ def aunt(A, B):
             print("❌ I can’t confirm she’s an aunt unless I know who the shared parent and sibling are.")
             return []
 
-
 def parent(A, B, C):
     A, B, C = normalize(A, B, C)
-    
+
     if A == B:
         print("❌ Parents must be different individuals.")
         return []
-    
+
+    # Check if child is already a parent of either parent
+    if list(prolog.query(f"parent_of({C}, {A})")):
+        print(f"❌ Contradiction: {C} is already a parent of {A}.")
+        return []
+
+    if list(prolog.query(f"parent_of({C}, {B})")):
+        print(f"❌ Contradiction: {C} is already a parent of {B}.")
+        return []
+
+    # Check if child is a sibling of either parent
+    if list(prolog.query(f"siblings({C}, {A})")):
+        print(f"❌ Contradiction: {C} is a sibling of {A}. Cannot be their child.")
+        return []
+
+    if list(prolog.query(f"siblings({C}, {B})")):
+        print(f"❌ Contradiction: {C} is a sibling of {B}. Cannot be their child.")
+        return []
+
+    # Check for ancestry cycle
+    if list(prolog.query(f"ancestor({C}, {A})")) or list(prolog.query(f"ancestor({C}, {B})")):
+        print(f"❌ Contradiction: {C} is already an ancestor of one of the parents.")
+        return []
+
     assertions = []
     assertions.append(f"parent_of({A}, {C})")
     assertions.append(f"parent_of({B}, {C})")
     return assertions
+
 
 
 
@@ -350,7 +391,7 @@ def query_aunt(A, B):
     return f"parent_of(Z, {B}), parent_of(X, Z), parent_of(X, {A}), female({A}), {A} \\= Z"
 
 def query_relative(A, B):
-    return f"related({A}, {B})"
+    return f"relatives({A}, {B})"
 
 
 
