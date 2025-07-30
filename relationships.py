@@ -100,55 +100,57 @@ def mother(A,B):
     A, B = normalize(A,B)
     
     if list(prolog.query(f"parent_of({B}, {A})")):
-        return "❌ Contradiction: Can't be mother and child."
+        return [], ("❌ Contradiction: Can't be mother and child.")
     
     assertions = []
     assertions.append(f"parent_of({A},{B})")
     assertions.append(f"female({A})")
-    return assertions
+    infer_and_assert_siblings_from_parent(B)
+    return assertions, f"✅ {A} is the mother of {B}."
 
-def father(A,B):
-    A, B = normalize(A,B)
+def father(A, B):
+    A, B = normalize(A, B)
     
     if list(prolog.query(f"parent_of({B}, {A})")):
-        return "❌ Contradiction: Can't be father and child."
+        return [], "❌ Contradiction: Can't be father and child."
     
     assertions = []
     assertions.append(f"parent_of({A},{B})")
     assertions.append(f"male({A})")
-    return assertions
+    infer_and_assert_siblings_from_parent(B)
+    return assertions, f"✅ {A} is the father of {B}."
 
-def son(A,B):
-    A, B = normalize(A,B)
+def son(A, B):
+    A, B = normalize(A, B)
     
     if list(prolog.query(f"parent_of({A}, {B})")):
-        return "❌ Contradiction: Can't be son and parent."
+        return [], "❌ Contradiction: Can't be son and parent."
     
     assertions = []
     assertions.append(f"parent_of({B},{A})")
     assertions.append(f"male({A})")
-    return assertions
+    return assertions, f"✅ {A} is the son of {B}."
 
-def daughter(A,B):
-    A, B = normalize(A,B)
+def daughter(A, B):
+    A, B = normalize(A, B)
     
     if list(prolog.query(f"parent_of({A}, {B})")):
-        return "❌ Contradiction: Can't be daughter and parent."
+        return [], "❌ Contradiction: Can't be daughter and parent."
     
     assertions = []
     assertions.append(f"parent_of({B},{A})")
     assertions.append(f"female({A})")
-    return assertions
+    return assertions, f"✅ {A} is the daughter of {B}."
 
-def child(A,B):
-    A, B = normalize(A,B)
+def child(A, B):
+    A, B = normalize(A, B)
     
     if list(prolog.query(f"parent_of({A},{B})")):
-        return "❌ Contradiction: Can't be child and parent."
+        return [], "❌ Contradiction: Can't be child and parent."
     
     assertions = []
     assertions.append(f"parent_of({B},{A})")
-    return assertions
+    return assertions, f"✅ {A} is the child of {B}."
 
 def children(A,B,C,D):
     A,B,C,D = normalize(A,B,C,D)
@@ -333,7 +335,7 @@ def query_aunt(A, B):
     return f"parent_of(Z, {B}), parent_of(X, Z), parent_of(X, {A}), female({A}), {A} \\= Z"
 
 def query_relative(A, B):
-    return f"relatives({A}, {B})"
+    return f"related({A}, {B})"
 
 
 def infer_and_assert_siblings_from_parent(parent):
@@ -351,6 +353,29 @@ def infer_and_assert_siblings_from_parent(parent):
     except Exception as e:
         return f"⚠️ Failed to infer siblings from parent {parent}: {e}"
 
+
+def check_parent_child_contradictions(A, B, C):
+    A, B, C = normalize(A, B, C)
+    
+    # Check if child is already a parent of either parent
+    if list(prolog.query(f"parent_of({C}, {A})")):
+        return f"❌ Contradiction: {C} is already a parent of {A}."
+
+    if list(prolog.query(f"parent_of({C}, {B})")):
+        return f"❌ Contradiction: {C} is already a parent of {B}."
+
+    # Check if child is a sibling of either parent
+    if list(prolog.query(f"siblings({C}, {A})")):
+        return f"❌ Contradiction: {C} is a sibling of {A}. Cannot be their child."
+
+    if list(prolog.query(f"siblings({C}, {B})")):
+        return f"❌ Contradiction: {C} is a sibling of {B}. Cannot be their child."
+
+    # Check for ancestry cycle
+    if list(prolog.query(f"ancestor({C}, {A})")) or list(prolog.query(f"ancestor({C}, {B})")):
+        return f"❌ Contradiction: {C} is already an ancestor of one of the parents."
+
+    return None
 
 
 def query_who_siblings(A):
