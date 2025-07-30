@@ -333,7 +333,23 @@ def query_aunt(A, B):
     return f"parent_of(Z, {B}), parent_of(X, Z), parent_of(X, {A}), female({A}), {A} \\= Z"
 
 def query_relative(A, B):
-    return f"related({A}, {B})"
+    return f"relatives({A}, {B})"
+
+
+def infer_and_assert_siblings_from_parent(parent):
+    try:
+        children = [res["X"] for res in prolog.query(f"parent_of({parent}, X)")]
+        for i in range(len(children)):
+            for j in range(i+1, len(children)):
+                a = children[i]
+                b = children[j]
+                try:
+                    prolog.assertz(f"siblings({a}, {b})")
+                    prolog.assertz(f"siblings({b}, {a})")
+                except:
+                    pass
+    except Exception as e:
+        return f"⚠️ Failed to infer siblings from parent {parent}: {e}"
 
 
 
