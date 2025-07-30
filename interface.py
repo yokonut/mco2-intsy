@@ -1,8 +1,13 @@
 from pyswip import Prolog
 import re
+from relationships import *
 
 family = Prolog()
 family.consult("rules.pl",relative_to=__file__)
+
+# Update the relationships module to use our family instance
+import relationships
+relationships.prolog = family
 
 relationships = {
     "son",
@@ -102,10 +107,11 @@ question_patterns = {
 #TO DO: Figure out how to parse sentences and determine which sentences are valid
 # Deal with some flaws of implications and with contingencies and contradictions
 
+# Initialize some test data
+family.retractall("male(_)")
+family.retractall("female(_)")
+family.retractall("parent_of(_,_)")
 
-
-
-family.retractall
 family.assertz("male(jerry)")
 family.assertz("male(ben)")
 family.assertz("female(sarah)")
@@ -115,7 +121,127 @@ family.assertz("parent_of(sarah, jerry)")
 family.assertz("parent_of(ben, emma)")
 family.assertz("parent_of(sarah, emma)")
 
-results = list(family.query("son_of(jerry, X)"))
-print("son_of():", results)
-print("Result is:", "True" if results else "False")
+# Test query to verify setup
+try:
+    results = list(family.query("son_of(jerry, X)"))
+    print("son_of():", results)
+    print("Result is:", "True" if results else "False")
+except Exception as e:
+    print(f"Prolog setup error: {e}")
+
+def process_statement(user_input):
+    """Process statements and return emoji responses like in relationships.py"""
+    try:
+        # Extract names from the input using regex - exclude common words
+        all_words = re.findall(r'\b[A-Za-z]+\b', user_input)
+        # Filter out common words that are not names
+        exclude_words = {'is', 'are', 'the', 'a', 'an', 'of', 'and', 'or', 'but', 'in', 'on', 'at', 'to', 'for', 'with', 'by', 'from', 'up', 'down', 'out', 'off', 'over', 'under', 'mother', 'father', 'son', 'daughter', 'sister', 'brother', 'grandfather', 'grandmother', 'uncle', 'aunt', 'child', 'children', 'sibling', 'siblings'}
+        names = [word for word in all_words if word.lower() not in exclude_words]
+        
+        if len(names) < 2:
+            return "❓ I need at least two names to understand the relationship."
+        
+        # Determine the relationship type and call appropriate function
+        if "mother" in user_input.lower():
+            assertions = mother(names[0], names[1])
+            return assertz(assertions)
+        elif "father" in user_input.lower():
+            assertions = father(names[0], names[1])
+            return assertz(assertions)
+        elif "son" in user_input.lower():
+            assertions = son(names[0], names[1])
+            return assertz(assertions)
+        elif "daughter" in user_input.lower():
+            assertions = daughter(names[0], names[1])
+            return assertz(assertions)
+        elif "child" in user_input.lower():
+            assertions = child(names[0], names[1])
+            return assertz(assertions)
+        elif "sibling" in user_input.lower():
+            return sibling(names[0], names[1])
+        elif "sister" in user_input.lower():
+            return sister(names[0], names[1])
+        elif "brother" in user_input.lower():
+            return brother(names[0], names[1])
+        elif "grandfather" in user_input.lower():
+            return grandfather(names[0], names[1])
+        elif "grandmother" in user_input.lower():
+            return grandmother(names[0], names[1])
+        elif "uncle" in user_input.lower():
+            return uncle(names[0], names[1])
+        elif "aunt" in user_input.lower():
+            return aunt(names[0], names[1])
+        else:
+            return "🤔 I don't understand that relationship. Try using words like mother, father, son, daughter, sibling, etc."
+    except Exception as e:
+        return f"❌ Error processing statement: {str(e)}"
+
+def process_question(user_input):
+    """Process questions and return emoji responses"""
+    try:
+        # Extract names from the input using regex - exclude common words
+        all_words = re.findall(r'\b[A-Za-z]+\b', user_input)
+        # Filter out common words that are not names
+        exclude_words = {'is', 'are', 'the', 'a', 'an', 'of', 'and', 'or', 'but', 'in', 'on', 'at', 'to', 'for', 'with', 'by', 'from', 'up', 'down', 'out', 'off', 'over', 'under', 'mother', 'father', 'son', 'daughter', 'sister', 'brother', 'grandfather', 'grandmother', 'uncle', 'aunt', 'child', 'children', 'sibling', 'siblings'}
+        names = [word for word in all_words if word.lower() not in exclude_words]
+        
+        if len(names) < 2:
+            return "❓ I need at least two names to answer that question."
+        
+        # Convert to lowercase for Prolog queries
+        names = [name.lower() for name in names]
+        
+        # Determine the question type and query
+        if "sibling" in user_input.lower():
+            results = list(family.query(f"siblings({names[0]}, {names[1]})"))
+            return "✅ Yes, they are siblings!" if results else "❌ No, they are not siblings."
+        elif "sister" in user_input.lower():
+            results = list(family.query(f"sister_of({names[0]}, {names[1]})"))
+            return "✅ Yes, she is the sister!" if results else "❌ No, she is not the sister."
+        elif "brother" in user_input.lower():
+            results = list(family.query(f"brother_of({names[0]}, {names[1]})"))
+            return "✅ Yes, he is the brother!" if results else "❌ No, he is not the brother."
+        elif "mother" in user_input.lower():
+            results = list(family.query(f"mother_of({names[0]}, {names[1]})"))
+            return "✅ Yes, she is the mother!" if results else "❌ No, she is not the mother."
+        elif "father" in user_input.lower():
+            results = list(family.query(f"father_of({names[0]}, {names[1]})"))
+            return "✅ Yes, he is the father!" if results else "❌ No, he is not the father."
+        elif "son" in user_input.lower():
+            results = list(family.query(f"son_of({names[0]}, {names[1]})"))
+            return "✅ Yes, he is the son!" if results else "❌ No, he is not the son."
+        elif "daughter" in user_input.lower():
+            results = list(family.query(f"daughter_of({names[0]}, {names[1]})"))
+            return "✅ Yes, she is the daughter!" if results else "❌ No, she is not the daughter."
+        elif "grandfather" in user_input.lower():
+            results = list(family.query(f"grandfather_of({names[0]}, {names[1]})"))
+            return "✅ Yes, he is the grandfather!" if results else "❌ No, he is not the grandfather."
+        elif "grandmother" in user_input.lower():
+            results = list(family.query(f"grandmother_of({names[0]}, {names[1]})"))
+            return "✅ Yes, she is the grandmother!" if results else "❌ No, she is not the grandmother."
+        elif "uncle" in user_input.lower():
+            results = list(family.query(f"uncle_of({names[0]}, {names[1]})"))
+            return "✅ Yes, he is the uncle!" if results else "❌ No, he is not the uncle."
+        elif "aunt" in user_input.lower():
+            results = list(family.query(f"aunt_of({names[0]}, {names[1]})"))
+            return "✅ Yes, she is the aunt!" if results else "❌ No, she is not the aunt."
+        elif "child" in user_input.lower():
+            results = list(family.query(f"child_of({names[0]}, {names[1]})"))
+            return "✅ Yes, they are child and parent!" if results else "❌ No, they are not child and parent."
+        else:
+            return "🤔 I don't understand that question. Try asking about relationships like siblings, mother, father, etc."
+    except Exception as e:
+        return f"❌ Error processing question: {str(e)}"
+
+def handle_user_input(user_input):
+    """Main function to handle user input and return appropriate response"""
+    user_input = user_input.strip()
     
+    # Check if it's a question (contains "?" or question words)
+    if "?" in user_input or any(word in user_input.lower() for word in ["who", "what", "when", "where", "why", "how"]):
+        return process_question(user_input)
+    # Check if it's a statement (contains words like "is", "are", "of")
+    elif any(word in user_input.lower() for word in ["is", "are", "of"]):
+        return process_statement(user_input)
+    else:
+        return "🤔 Please ask a question or make a statement about family relationships."    

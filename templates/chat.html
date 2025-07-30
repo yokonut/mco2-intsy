@@ -13,8 +13,8 @@
     ChatBunny
   </h1>
 
-  <!-- Message display -->
-  <div id="contents" class="flex flex-col items-center justify-center h-screen">
+  <!-- Message display (initially hidden) -->
+  <div id="contents" class="hidden flex flex-col items-center justify-center pt-[15vh]">
     <div id="user-query" class="flex justify-center items-center flex-col
                  bg-[#FABABB] rounded-full w-[1200px] h-[80px] mb-[80px] ml-[80px]">
     </div>
@@ -61,6 +61,8 @@
       const userBubble = document.getElementById("user-query");
       const botBubble = document.getElementById("bot-ans");
 
+      document.getElementById("contents").classList.remove("hidden"); // Show contents section
+
       userBubble.innerHTML = question;
 
       fetch("/chat", {
@@ -79,4 +81,3 @@
 
 </body>
 </html>
-

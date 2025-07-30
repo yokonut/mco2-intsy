@@ -13,7 +13,7 @@
     </div>
     <div class="flex items-center justify-center">
         <button type="button" class="hover:scale-105 transition-transform duration-300"
-            data-href="{{ url_for('chat') }}" onclick="window.location.href=this.getAttribute('data-href')">
+            data-href="{{ url_for('show_chat') }}" onclick="window.location.href=this.getAttribute('data-href')">
             <img src="{{ url_for('static', filename='img/start-bunny.png') }}" style="height: 350px;">
         </button>
     </div>

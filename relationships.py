@@ -7,18 +7,17 @@ def assertz(assertions):
         for fact in assertions:
             existing = list(prolog.query(fact))
             if existing:
-                print(f"📌 I already knew: {fact}")
-                continue
+                return f"📌 I already knew: {fact}"
 
             prolog.assertz(fact)
             temp_assertions.append(fact)
 
-        print("✅ I've learned something new.")
+        return "✅ I've learned something new."
 
     except Exception as e:
         for fact in temp_assertions:
             prolog.retract(fact)
-        print("❌ That's impossible! One or more statements contradict known facts.")
+        return "❌ That's impossible! One or more statements contradict known facts."
 
 def normalize(*args):
     return [a.lower() for a in args]
@@ -74,11 +73,9 @@ def sibling(A, B):
     results = list(prolog.query(query))
 
     if results:
-        print("✅ I already knew they were siblings!")
-        return []
+        return "✅ I already knew they were siblings!"
     else:
-        print("❌ I can’t confirm that unless I know who their shared parent is.")
-        return []
+        return "❌ I can't confirm that unless I know who their shared parent is."
 
 def sister(A, B):
     A, B = normalize(A, B)
@@ -88,10 +85,9 @@ def sister(A, B):
 
     if results:
         assertions = [f"female({A})"]
-        return assertions
+        return assertz(assertions)
     else:
-        print("❌ I can’t confirm she’s a sister unless I know a shared parent.")
-        return []
+        return "❌ I can't confirm she's a sister unless I know a shared parent."
 
 def brother(A, B):
     A, B = normalize(A, B)
@@ -101,10 +97,9 @@ def brother(A, B):
 
     if results:
         assertions = [f"male({A})"]
-        return assertions
+        return assertz(assertions)
     else:
-        print("❌ I can’t confirm he’s a brother unless I know a shared parent.")
-        return []
+        return "❌ I can't confirm he's a brother unless I know a shared parent."
     
 def grandfather(A, B):
     A, B = normalize(A, B)
@@ -115,10 +110,9 @@ def grandfather(A, B):
 
     if results:
         assertions.append(f"male({A})")
-        return assertions
+        return assertz(assertions)
     else:
-        print("❌ I can’t confirm he’s a grandfather unless I know the parent and grandparent links.")
-        return []
+        return "❌ I can't confirm he's a grandfather unless I know the parent and grandparent links."
 
 def grandmother(A, B):
     A, B = normalize(A, B)
@@ -129,10 +123,9 @@ def grandmother(A, B):
 
     if results:
         assertions.append(f"female({A})")
-        return assertions
+        return assertz(assertions)
     else:
-        print("❌ I can’t confirm she’s a grandmother unless I know the parent and grandparent links.")
-        return []
+        return "❌ I can't confirm she's a grandmother unless I know the parent and grandparent links."
     
 
 def uncle(A, B):
@@ -144,10 +137,9 @@ def uncle(A, B):
 
     if results:
         assertions.append(f"male({A})")
-        return assertions
+        return assertz(assertions)
     else:
-        print("❌ I can’t confirm he’s an uncle unless I know who the shared parent and sibling are.")
-        return []
+        return "❌ I can't confirm he's an uncle unless I know who the shared parent and sibling are."
 
 def aunt(A, B):
     A, B = normalize(A, B)
@@ -158,9 +150,8 @@ def aunt(A, B):
 
     if results:
         assertions.append(f"female({A})")
-        return assertions
+        return assertz(assertions)
     else:
-        print("❌ I can’t confirm she’s an aunt unless I know who the shared parent and sibling are.")
-        return []
+        return "❌ I can't confirm she's an aunt unless I know who the shared parent and sibling are."
   
 
