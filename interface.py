@@ -44,36 +44,9 @@ statement_patterns = {
     "{A} is an aunt of {B}.": "aunt({A},{B})"
 }
 
-
-# question_patterns = {
-    
-#     "Are {A} and {B} siblings?": lambda A, B: f"sibling({A.lower()}, {B.lower()})",
-#     "Is {A} a sister of {B}?": lambda A, B: f"sister({A.lower()}, {B.lower()})",
-#     "Is {A} a brother of {B}?": lambda A, B: f"brother({A.lower()}, {B.lower()})",
-#     "Is {A} the mother of {B}?": lambda A, B: f"mother({A.lower()}, {B.lower()})",
-#     "Is {A} the father of {B}?": lambda A, B: f"father({A.lower()}, {B.lower()})",
-#     "Are {A} and {B} the parents of {C}?": lambda A, B, C: f"parent({A.lower()}, {C.lower()}) , parent({B.lower()}, {C.lower()})",
-#     "Is {A} a grandmother of {B}?": lambda A, B: f"grandmother({A.lower()}, {B.lower()})",
-#     "Is {A} a daughter of {B}?": lambda A, B: f"daughter({A.lower()}, {B.lower()})",
-#     "Is {A} a son of {B}?": lambda A, B: f"son({A.lower()}, {B.lower()})",
-#     "Is {A} a child of {B}?": lambda A, B: f"child({A.lower()}, {B.lower()})",
-#     "Are {A}, {B} and {C} children of {D}?": lambda A, B, C, D: f"child({A.lower()}, {D.lower()}) , child({B.lower()}, {D.lower()}) , child({C.lower()}, {D.lower()})",
-#     "Is {A} an uncle of {B}?": lambda A, B: f"uncle({A.lower()}, {B.lower()})",
-#     "Who are the siblings of {A}?": lambda A: f"sibling(X, {A.lower()})",
-#     "Who are the sisters of {A}?": lambda A: f"sister(X, {A.lower()})",
-#     "Who are the brothers of {A}?": lambda A: f"brother(X, {A.lower()})",
-#     "Who is the mother of {A}?": lambda A: f"mother(X, {A.lower()})",
-#     "Who is the father of {A}?": lambda A: f"father(X, {A.lower()})",
-#     "Who are the parents of {A}?": lambda A: f"parent(X, {A.lower()})",
-#     "Is {A} a grandfather of {B}?": lambda A, B: f"grandfather({A.lower()}, {B.lower()})",
-#     "Who are the daughters of {A}?": lambda A: f"daughter(X, {A.lower()})",
-#     "Who are the sons of {A}?": lambda A: f"son(X, {A.lower()})",
-#     "Who are the children of {A}?": lambda A: f"child(X, {A.lower()})",
-#     "Is {A} an aunt of {B}?": lambda A, B: f"aunt({A.lower()}, {B.lower()})",
-#     "Are {A} and {B} relatives?": lambda A, B: f"relative({A.lower()}, {B.lower()})"
-# }
-
+# Updated question patterns to match exactly the sentence patterns from the image
 question_patterns = {
+    # Yes/No questions (left column)
     "Are {A} and {B} siblings?": lambda A, B: f"query_sibling({A.lower()}, {B.lower()})",
     "Is {A} a sister of {B}?": lambda A, B: f"query_sister({A.lower()}, {B.lower()})",
     "Is {A} a brother of {B}?": lambda A, B: f"query_brother({A.lower()}, {B.lower()})",
@@ -85,12 +58,12 @@ question_patterns = {
     "Is {A} a daughter of {B}?": lambda A, B: f"query_daughter({A.lower()}, {B.lower()})",
     "Is {A} a son of {B}?": lambda A, B: f"query_son({A.lower()}, {B.lower()})",
     "Is {A} a child of {B}?": lambda A, B: f"query_child({A.lower()}, {B.lower()})",
-    "Are {A}, {B} and {C} children of {D}?": lambda A, B, C, D: f"query_children_of({A.lower()}, {B.lower()}, {C.lower()}, {D.lower()})",
+    "Are {A} and {B} children of {C}?": lambda A, B, C: f"query_children_of({A.lower()}, {B.lower()}, {C.lower()})",
     "Is {A} an uncle of {B}?": lambda A, B: f"query_uncle({A.lower()}, {B.lower()})",
     "Is {A} an aunt of {B}?": lambda A, B: f"query_aunt({A.lower()}, {B.lower()})",
     "Are {A} and {B} relatives?": lambda A, B: f"query_relative({A.lower()}, {B.lower()})",
 
-    # WHO-type queries
+    # WHO-type queries (right column)
     "Who are the siblings of {A}?": lambda A: f"query_who_siblings({A.lower()})",
     "Who are the sisters of {A}?": lambda A: f"query_who_sisters({A.lower()})",
     "Who are the brothers of {A}?": lambda A: f"query_who_brothers({A.lower()})",
@@ -101,8 +74,6 @@ question_patterns = {
     "Who are the sons of {A}?": lambda A: f"query_who_sons({A.lower()})",
     "Who are the children of {A}?": lambda A: f"query_who_children({A.lower()})"
 }
-
-
 
 #TO DO: Figure out how to parse sentences and determine which sentences are valid
 # Deal with some flaws of implications and with contingencies and contradictions
@@ -182,14 +153,82 @@ def process_question(user_input):
         # Extract names from the input using regex - exclude common words
         all_words = re.findall(r'\b[A-Za-z]+\b', user_input)
         # Filter out common words that are not names
-        exclude_words = {'is', 'are', 'the', 'a', 'an', 'of', 'and', 'or', 'but', 'in', 'on', 'at', 'to', 'for', 'with', 'by', 'from', 'up', 'down', 'out', 'off', 'over', 'under', 'mother', 'father', 'son', 'daughter', 'sister', 'brother', 'grandfather', 'grandmother', 'uncle', 'aunt', 'child', 'children', 'sibling', 'siblings'}
+        exclude_words = {'is', 'are', 'the', 'a', 'an', 'of', 'and', 'or', 'but', 'in', 'on', 'at', 'to', 'for', 'with', 'by', 'from', 'up', 'down', 'out', 'off', 'over', 'under', 'mother', 'father', 'son', 'daughter', 'sister', 'brother', 'grandfather', 'grandmother', 'uncle', 'aunt', 'child', 'children', 'sibling', 'siblings', 'who', 'what', 'when', 'where', 'why', 'how'}
         names = [word for word in all_words if word.lower() not in exclude_words]
         
-        if len(names) < 2:
-            return "❓ I need at least two names to answer that question."
+        if len(names) < 1:
+            return "❓ I need at least one name to answer that question."
         
         # Convert to lowercase for Prolog queries
         names = [name.lower() for name in names]
+        
+        # Check for WHO-type questions first
+        if "who" in user_input.lower():
+            if "siblings" in user_input.lower():
+                results = list(family.query(f"siblings(X, {names[0]})"))
+                if results:
+                    sibling_names = list(set([result['X'] for result in results]))  # Deduplicate
+                    return f"✅ The siblings of {names[0]} are: {', '.join(sibling_names)}"
+                else:
+                    return f"❌ I don't know any siblings of {names[0]}."
+            elif "sisters" in user_input.lower():
+                results = list(family.query(f"sister_of(X, {names[0]})"))
+                if results:
+                    sister_names = list(set([result['X'] for result in results]))  # Deduplicate
+                    return f"✅ The sisters of {names[0]} are: {', '.join(sister_names)}"
+                else:
+                    return f"❌ I don't know any sisters of {names[0]}."
+            elif "brothers" in user_input.lower():
+                results = list(family.query(f"brother_of(X, {names[0]})"))
+                if results:
+                    brother_names = list(set([result['X'] for result in results]))  # Deduplicate
+                    return f"✅ The brothers of {names[0]} are: {', '.join(brother_names)}"
+                else:
+                    return f"❌ I don't know any brothers of {names[0]}."
+            elif "mother" in user_input.lower():
+                results = list(family.query(f"mother_of(X, {names[0]})"))
+                if results:
+                    return f"✅ The mother of {names[0]} is: {results[0]['X']}"
+                else:
+                    return f"❌ I don't know the mother of {names[0]}."
+            elif "father" in user_input.lower():
+                results = list(family.query(f"father_of(X, {names[0]})"))
+                if results:
+                    return f"✅ The father of {names[0]} is: {results[0]['X']}"
+                else:
+                    return f"❌ I don't know the father of {names[0]}."
+            elif "parents" in user_input.lower():
+                results = list(family.query(f"parent_of(X, {names[0]})"))
+                if results:
+                    parent_names = list(set([result['X'] for result in results]))  # Deduplicate
+                    return f"✅ The parents of {names[0]} are: {', '.join(parent_names)}"
+                else:
+                    return f"❌ I don't know the parents of {names[0]}."
+            elif "daughters" in user_input.lower():
+                results = list(family.query(f"daughter_of(X, {names[0]})"))
+                if results:
+                    daughter_names = list(set([result['X'] for result in results]))  # Deduplicate
+                    return f"✅ The daughters of {names[0]} are: {', '.join(daughter_names)}"
+                else:
+                    return f"❌ I don't know any daughters of {names[0]}."
+            elif "sons" in user_input.lower():
+                results = list(family.query(f"son_of(X, {names[0]})"))
+                if results:
+                    son_names = list(set([result['X'] for result in results]))  # Deduplicate
+                    return f"✅ The sons of {names[0]} are: {', '.join(son_names)}"
+                else:
+                    return f"❌ I don't know any sons of {names[0]}."
+            elif "children" in user_input.lower():
+                results = list(family.query(f"child_of(X, {names[0]})"))
+                if results:
+                    child_names = list(set([result['X'] for result in results]))  # Deduplicate
+                    return f"✅ The children of {names[0]} are: {', '.join(child_names)}"
+                else:
+                    return f"❌ I don't know any children of {names[0]}."
+        
+        # Handle yes/no questions
+        if len(names) < 2:
+            return "❓ I need at least two names to answer that question."
         
         # Determine the question type and query
         if "sibling" in user_input.lower():
@@ -228,6 +267,9 @@ def process_question(user_input):
         elif "child" in user_input.lower():
             results = list(family.query(f"child_of({names[0]}, {names[1]})"))
             return "✅ Yes, they are child and parent!" if results else "❌ No, they are not child and parent."
+        elif "relative" in user_input.lower():
+            results = list(family.query(f"relatives({names[0]}, {names[1]})"))
+            return "✅ Yes, they are relatives!" if results else "❌ No, they are not relatives."
         else:
             return "🤔 I don't understand that question. Try asking about relationships like siblings, mother, father, etc."
     except Exception as e:
@@ -244,4 +286,5 @@ def handle_user_input(user_input):
     elif any(word in user_input.lower() for word in ["is", "are", "of"]):
         return process_statement(user_input)
     else:
-        return "🤔 Please ask a question or make a statement about family relationships."    
+        return "🤔 Please ask a question or make a statement about family relationships."
+    

@@ -5,9 +5,32 @@ def assertz(assertions):
     temp_assertions = [] 
     try:
         for fact in assertions:
+            # Check if fact already exists
             existing = list(prolog.query(fact))
             if existing:
                 return f"📌 I already knew: {fact}"
+            
+            # Check for contradictions based on fact type
+            if "male(" in fact:
+                person = fact.split("(")[1].split(")")[0]
+                # Check if person is already female
+                female_check = list(prolog.query(f"female({person})"))
+                if female_check:
+                    return "❌ That's impossible! One or more statements contradict known facts."
+            elif "female(" in fact:
+                person = fact.split("(")[1].split(")")[0]
+                # Check if person is already male
+                male_check = list(prolog.query(f"male({person})"))
+                if male_check:
+                    return "❌ That's impossible! One or more statements contradict known facts."
+            elif "parent_of(" in fact:
+                parts = fact.split("(")[1].split(")")[0].split(",")
+                parent = parts[0].strip()
+                child = parts[1].strip()
+                # Check if child is already a parent of the parent (circular)
+                circular_check = list(prolog.query(f"parent_of({child}, {parent})"))
+                if circular_check:
+                    return "❌ That's impossible! One or more statements contradict known facts."
 
             prolog.assertz(fact)
             temp_assertions.append(fact)
@@ -16,7 +39,10 @@ def assertz(assertions):
 
     except Exception as e:
         for fact in temp_assertions:
-            prolog.retract(fact)
+            try:
+                prolog.retract(fact)
+            except:
+                pass
         return "❌ That's impossible! One or more statements contradict known facts."
 
 def normalize(*args):
